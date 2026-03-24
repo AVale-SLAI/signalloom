@@ -1,0 +1,12 @@
+{
+  "name": "signal-loom-api",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "restartPolicyType": "OnFailure",
+    "restartPolicyMaxRetries": 10
+  },
+  "port": 18790
+}

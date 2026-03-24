@@ -1,0 +1,23 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [main]
+    paths: [signal-loom-api/**]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Railway
+        run: npm install -g @railway/cli
+
+      - name: Deploy
+        working-directory: ./signal-loom-api
+        run: |
+          railway up --service signalloom --environment production
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: a17adb32-1029-4368-81e7-0a3ff877cddb
