@@ -1,0 +1,73 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "signalloom"
+version = "0.1.0"
+description = "Python SDK for the Signal Loom AI transcription API"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Signal Loom", email = "dev@signalloom.ai" }
+]
+keywords = ["transcription", "audio", "video", "whisper", "speech-to-text", "ai"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "python-multipart>=0.0.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-httpserver>=1.0.0",
+    "httpx>=0.25.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "types-python-multipart",
+]
+langchain = [
+    "langchain>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/signalloom/signalloom-python"
+Documentation = "https://github.com/signalloom/signalloom-python"
+Repository = "https://github.com/signalloom/signalloom-python"
+Issues = "https://github.com/signalloom/signalloom-python/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["signalloom"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "D", "UP", "B", "C4", "SIM"]
+ignore = ["D104", "D100", "N802", "N803"]
+
+[tool.mypy]
+python_version = "3.9"
+strict = false
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
