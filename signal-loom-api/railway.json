@@ -8,5 +8,5 @@
     "restartPolicyType": "OnFailure",
     "restartPolicyMaxRetries": 10
   },
-  "port": 18790
+  "port": 8080
 }
