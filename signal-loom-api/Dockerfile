@@ -15,13 +15,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Expose port (Railway injects PORT env var)
-ENV PORT=18790
-EXPOSE 18790
+# Railway expects PORT env var (default 8080 for Caddy proxy)
+ENV PORT=8080
+EXPOSE 8080
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# Run with uvicorn
+# Run with uvicorn on Railway's expected port
 CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PORT}"]
