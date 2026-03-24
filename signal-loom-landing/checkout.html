@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upgrade — Signal Loom AI</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f0e17'/%3E%3Cpath d='M8 16 Q16 8 24 16 Q16 24 8 16Z' fill='%23c4f5a9'/%3E%3C/svg%3E" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0e17;
+      --bg-card: #201e2e;
+      --text: #fffffe;
+      --text-muted: #a7a4b5;
+      --accent: #c4f5a9;
+      --accent-dim: #a8d88a;
+      --border: #2a2837;
+      --font: 'Inter', -apple-system, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+    }
+    .logo { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 32px; display: flex; align-items: center; gap: 8px; justify-content: center; }
+    .logo svg { width: 24px; height: 24px; }
+    h1 { font-size: 22px; margin-bottom: 8px; }
+    p { color: var(--text-muted); font-size: 15px; margin-bottom: 32px; line-height: 1.6; }
+    .tier-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #0f0e17;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .price { font-size: 48px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .price span { font-size: 18px; font-weight: 400; color: var(--text-muted); }
+    .loading { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { background: #3d1f1f; border: 1px solid #5c3030; border-radius: 8px; padding: 16px; color: #ff9a9a; font-size: 14px; margin-bottom: 20px; }
+    .btn { display: inline-block; background: var(--accent); color: #0f0e17; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 8px; text-decoration: none; transition: background 0.2s; }
+    .btn:hover { background: var(--accent-dim); }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); margin-top: 12px; }
+    .btn-secondary:hover { background: var(--border); }
+    .features { list-style: none; margin: 20px 0; text-align: left; }
+    .features li { padding: 6px 0; font-size: 14px; color: var(--text-muted); display: flex; gap: 8px; }
+    .features li::before { content: '✓'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+    .note { font-size: 12px; color: var(--text-muted); margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0f0e17"/><path d="M8 16 Q16 8 24 16 Q16 24 8 16Z" fill="#c4f5a9"/></svg>
+      Signal Loom AI
+    </div>
+
+    <!-- Loading state -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p style="margin-bottom:0">Preparing your secure checkout...</p>
+    </div>
+
+    <!-- Error state -->
+    <div id="error" style="display:none">
+      <div class="error" id="error-msg"></div>
+      <a href="/#pricing" class="btn btn-secondary">Back to pricing</a>
+    </div>
+
+    <!-- Success: redirecting -->
+    <div id="redirect" style="display:none">
+      <div class="tier-badge" id="tier-name"></div>
+      <h1>Redirecting to Stripe...</h1>
+      <p>Secure payment powered by Stripe. You'll be charged <strong id="price-display"></strong>/month.</p>
+      <a href="#" id="checkout-link" class="btn" target="_blank">Continue to Stripe Checkout ↗</a>
+      <p class="note">If you're not redirected automatically, click the button above.</p>
+    </div>
+  </div>
+
+  <script>
+    // Read tier and api_key_id from URL params
+    const params = new URLSearchParams(window.location.search);
+    const tier = params.get('tier') || 'starter';
+    // The API key is passed as 'key' param (full key from /v1/keys response)
+    // Extract the key_id = first 12 chars of the part after "slo_"
+    const apiKeyFull = params.get('key') || '';
+    // key_id format: first 12 chars of full key (e.g. slo_yc_mtaID)
+    const apiKeyId = apiKeyFull.length >= 12 ? apiKeyFull.substring(0, 12) : apiKeyFull;
+
+    const TIERS = {
+      starter: { name: 'Starter', price: '$25', priceId: 'price_1TEXpIB4VUPCUvyHXltiCrGy' },
+      pro:     { name: 'Pro',     price: '$99',  priceId: 'price_1TEXpIB4VUPCUvyHNI6WFbL4' },
+      scale:   { name: 'Scale',   price: '$349', priceId: 'price_1TEXpJB4VUPCUvyHeNw6o2aY' },
+    };
+
+    const info = TIERS[tier] || TIERS.starter;
+
+    async function createCheckout() {
+      try {
+        // Call our API to create a Stripe Checkout session
+        const resp = await fetch('https://relatively-extension-secretary-charles.trycloudflare.com/v1/stripe/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            tier: tier,
+            success_url: `${window.location.origin}/success.html?session_id={CHECKOUT_SESSION_ID}&tier=${tier}`,
+            cancel_url: `${window.location.origin}/index.html#pricing`,
+          }),
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok || !data.checkout_url) {
+          throw new Error(data.detail || 'Failed to create checkout session');
+        }
+
+        // Show redirect UI
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('redirect').style.display = 'flex';
+        document.getElementById('redirect').style.flexDirection = 'column';
+        document.getElementById('redirect').style.alignItems = 'center';
+        document.getElementById('tier-name').textContent = info.name;
+        document.getElementById('price-display').textContent = info.price;
+        const link = document.getElementById('checkout-link');
+        link.href = data.checkout_url;
+
+        // Auto-redirect after 2s
+        setTimeout(() => { window.location.href = data.checkout_url; }, 2000);
+
+      } catch (err) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error-msg').textContent = err.message;
+      }
+    }
+
+    createCheckout();
+  </script>
+</body>
+</html>

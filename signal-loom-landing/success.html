@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upgrade Complete — Signal Loom AI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0e17; --bg-card: #201e2e; --text: #fffffe;
+      --text-muted: #a7a4b5; --accent: #c4f5a9; --border: #2a2837;
+    }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: -apple-system, sans-serif;
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 48px 40px;
+      max-width: 520px; width: 90%; text-align: center;
+    }
+    .logo { display: flex; align-items: center; gap: 8px; justify-content: center;
+      font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 32px; }
+    .logo svg { width: 24px; height: 24px; }
+    .check { width: 64px; height: 64px; background: #c4f5a9; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+    .check svg { width: 32px; height: 32px; }
+    h1 { font-size: 26px; margin-bottom: 8px; }
+    p { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+    .tier { display: inline-block; background: var(--accent); color: #0f0e17;
+      font-size: 12px; font-weight: 700; padding: 4px 12px;
+      border-radius: 100px; margin-bottom: 24px; text-transform: uppercase; }
+    .key-box { background: #13121e; border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 16px; margin: 16px 0; font-family: monospace; font-size: 13px;
+      color: var(--accent); word-break: break-all; text-align: left; }
+    .btn { display: inline-block; background: var(--accent); color: #0f0e17;
+      font-weight: 700; font-size: 14px; padding: 12px 28px;
+      border-radius: 8px; text-decoration: none; margin: 6px; }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn:hover { opacity: 0.9; }
+    .note { font-size: 12px; color: var(--text-muted); margin-top: 20px; }
+    .step { display: flex; gap: 12px; text-align: left; margin-top: 20px; padding: 16px;
+      background: #13121e; border-radius: 8px; }
+    .step-num { background: var(--accent); color: #0f0e17; font-weight: 700; font-size: 12px;
+      width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0; }
+    .step-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .step-text strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0f0e17"/><path d="M8 16 Q16 8 24 16 Q16 24 8 16Z" fill="#c4f5a9"/></svg>
+      Signal Loom AI
+    </div>
+    <div class="check">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0f0e17" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <div class="tier" id="tier-badge">Starter Plan</div>
+    <h1>Payment successful!</h1>
+    <p>Your subscription is active and your API key has been upgraded. Start building with full access.</p>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text"><strong>Install the SDK</strong><br/><code>pip install signalloom</code></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text"><strong>Use your API key</strong><br/>
+        <div class="key-box" id="key-display">Loading...</div>
+      </div>
+    </div>
+    <div style="margin-top:24px">
+      <a href="/docs" class="btn">View API Docs →</a>
+      <a href="/signup.html" class="btn btn-secondary">Get new key</a>
+    </div>
+    <p class="note">Questions? Email hello@signalloomai.com</p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const tier = params.get('tier') || 'starter';
+    const apiKey = params.get('key') || '';
+    const tierNames = { starter: 'Starter Plan', pro: 'Pro Plan', scale: 'Scale Plan' };
+    document.getElementById('tier-badge').textContent = tierNames[tier] || 'Paid Plan';
+    document.getElementById('key-display').textContent = apiKey || '(key not found — sign in to view)';
+  </script>
+</body>
+</html>
