@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Loom AI — Why Local Intelligence</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0e1a;
+    color: #e8edf5;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 52px; }
+  .logo-area { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 14px; }
+  .logo-placeholder {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: linear-gradient(135deg, #2a5fa8, #1e3d6e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .logo-text { font-size: 24px; font-weight: 700; color: #fff; }
+  .logo-text span { color: #5b9cf6; }
+  .tagline { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #4a6a9a; margin-bottom: 14px; }
+  .hero-title { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .hero-sub { font-size: 15px; color: #8899bb; max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+  /* Section title */
+  .section-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #3a6aaa; text-align: center; margin-bottom: 20px; }
+
+  /* Comparison table */
+  .table-wrap { overflow-x: auto; margin-bottom: 36px; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 12px; font-weight: 600;
+    color: #8899bb;
+    border-bottom: 1px solid #1e2d4a;
+    vertical-align: bottom;
+  }
+  th:first-child { color: #5b9cf6; }
+  td {
+    padding: 13px 14px;
+    border-bottom: 1px solid #111a28;
+    color: #c8d8f0;
+    vertical-align: top;
+  }
+  tr:hover td { background: #0d1525; }
+  tr:last-child td { border-bottom: none; }
+
+  .col-product { font-weight: 600; color: #fff; }
+  .col-product span { display: block; font-size: 10px; color: #4a6a9a; font-weight: 400; margin-top: 2px; }
+
+  /* Checkmarks and X marks */
+  .yes { color: #4aba7a; font-weight: 700; }
+  .no { color: #e84a6a; }
+  .partial { color: #c8a04a; }
+  .neutral { color: #5b9cf6; }
+  .bold-neutral { color: #5b9cf6; font-weight: 700; }
+
+  /* Callout box */
+  .callout {
+    background: linear-gradient(135deg, #0d2040, #0f2847);
+    border: 1px solid #1a4080;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 36px;
+    text-align: center;
+  }
+  .callout-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .callout-text { font-size: 14px; color: #a8c0e8; line-height: 1.7; }
+  .callout-text strong { color: #5b9cf6; }
+
+  /* Three audience cards */
+  .audiences { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 36px; }
+  .audience-card {
+    background: #0f1a2e; border: 1px solid #1e2d4a;
+    border-radius: 14px; padding: 20px;
+  }
+  .audience-icon { font-size: 28px; margin-bottom: 10px; }
+  .audience-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .audience-desc { font-size: 12px; color: #7a8aaa; line-height: 1.6; }
+
+  /* Bottom line */
+  .bottom-line {
+    text-align: center; margin-top: 48px;
+    background: linear-gradient(135deg, #0d1f3c 0%, #0a1428 100%);
+    border: 1px solid #1e3060; border-radius: 14px;
+    padding: 28px 32px;
+  }
+  .bottom-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .bottom-desc { font-size: 14px; color: #8899bb; line-height: 1.7; max-width: 500px; margin: 0 auto; }
+  .bottom-desc strong { color: #5b9cf6; }
+
+  /* Sticky header col */
+  .sticky-col { position: sticky; left: 0; background: #0a0e1a; z-index: 1; }
+
+  .footer { text-align: center; margin-top: 36px; padding-top: 20px; border-top: 1px solid #1a2540; font-size: 11px; color: #3a4f6a; }
+
+  @media (max-width: 700px) {
+    .audiences { grid-template-columns: 1fr; }
+    th, td { padding: 10px 8px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-placeholder">SL</div>
+      <div class="logo-text">Signal Loom <span>AI</span></div>
+    </div>
+    <div class="tagline">Media In · Machine Intelligence Out</div>
+    <h1 class="hero-title">Why Local Intelligence Changes Everything</h1>
+    <p class="hero-sub">Cloud APIs process your audio. Signal Loom processes your audio on Apple Silicon — privately, predictably, and at hardware cost. Here's the real difference.</p>
+  </div>
+
+  <!-- Audience cards -->
+  <div class="section-title">Who This Is For</div>
+  <div class="audiences">
+    <div class="audience-card">
+      <div class="audience-icon">🤖</div>
+      <div class="audience-title">AI Agent Builders</div>
+      <div class="audience-desc">Building agents that need structured, timestamped, machine-readable audio intelligence — not just human-readable transcripts.</div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">🍎</div>
+      <div class="audience-title">M-Series Mac Owners</div>
+      <div class="audience-desc">Your Apple Silicon hardware runs MLX Whisper faster than any cloud API — and your data never leaves your machine.</div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">🏢</div>
+      <div class="audience-title">Privacy-First Enterprises</div>
+      <div class="audience-desc">Healthcare, legal, financial — industries where audio data cannot go to third-party clouds. It stays on your infrastructure.</div>
+    </div>
+  </div>
+
+  <!-- Comparison table -->
+  <div class="section-title">Cloud API vs. Signal Loom AI</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="sticky-col" style="min-width:160px;">Capability</th>
+          <th style="min-width:180px;">
+            <span style="color:#e84a6a;">☁️</span> Cloud Whisper API<br>
+            <span style="font-size:10px;color:#4a6a9a;font-weight:400;">OpenAI · Google · AWS · Azure</span>
+          </th>
+          <th style="min-width:180px;">
+            <span style="color:#5b9cf6;">🍎</span> Signal Loom AI<br>
+            <span style="font-size:10px;color:#4a6a9a;font-weight:400;">MLX on Apple Silicon</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- COST -->
+        <tr><td colspan="4" style="background:#0a1220;padding:8px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3a6aaa;">Cost & Economics</td></tr>
+        <tr>
+          <td class="sticky-col col-product">Per-minute API cost</td>
+          <td><span class="no">$0.006–$0.024 / min</span><br><span style="font-size:10px;color:#4a6a9a;">Scales with usage. No ceiling.</span></td>
+          <td><span class="yes">Hardware cost only</span><br><span style="font-size:10px;color:#4a6a9a;">No per-minute API billing. Predictable.</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Cost at scale (1M min/mo)</td>
+          <td><span class="no">$6,000–$24,000 / month</span></td>
+          <td><span class="yes">~$0.03 / kWh</span><br><span style="font-size:10px;color:#4a6a9a;">M4 Pro ~40W at full load = ~$10–15/month</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Infrastructure cost predictability</td>
+          <td><span class="no">Variable — usage-based</span></td>
+          <td><span class="yes">Fixed — one-time hardware</span></td>
+        </tr>
+
+        <!-- PRIVACY -->
+        <tr><td colspan="4" style="background:#0a1220;padding:8px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3a6aaa;">Privacy & Data Sovereignty</td></tr>
+        <tr>
+          <td class="sticky-col col-product">Audio data sent to third-party cloud</td>
+          <td><span class="no">YES — every file</span></td>
+          <td><span class="yes">NO — processed locally</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">HIPAA / data residency compliance</td>
+          <td><span class="partial">Requires BAA + configuration</span></td>
+          <td><span class="yes">Native — data never leaves</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Enterprise audit trail</td>
+          <td><span class="partial">Cloud provider logs only</span></td>
+          <td><span class="yes">Full self-hosted control</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Customer data stays private</td>
+          <td><span class="partial">Governed by cloud ToS</span></td>
+          <td><span class="yes">100% under your control</span></td>
+        </tr>
+
+        <!-- SPEED -->
+        <tr><td colspan="4" style="background:#0a1220;padding:8px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3a6aaa;">Speed & Latency</td></tr>
+        <tr>
+          <td class="sticky-col col-product">Network round-trip latency</td>
+          <td><span class="no">50–500ms per request</span><br><span style="font-size:10px;color:#4a6a9a;">Depends on file size + connection</span></td>
+          <td><span class="yes">Zero network latency</span><br><span style="font-size:10px;color:#4a6a9a;">Direct hardware access</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">M4 Pro processing speed</td>
+          <td><span class="partial">Depends on cloud region</span></td>
+          <td><span class="yes">~4,000× realtime audio</span><br><span style="font-size:10px;color:#4a6a9a;">20s audio in ~4 seconds实测</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Throughput at scale</td>
+          <td><span class="partial">Rate-limited by plan</span></td>
+          <td><span class="yes">Unlimited — run 24/7</span></td>
+        </tr>
+
+        <!-- OUTPUT -->
+        <tr><td colspan="4" style="background:#0a1220;padding:8px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3a6aaa;">Output & Intelligence</td></tr>
+        <tr>
+          <td class="sticky-col col-product">Word-level timestamps</td>
+          <td><span class="partial">Available but inconsistent</span></td>
+          <td><span class="yes">Native — every word</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Multi-format output (JSON + SRT + VTT + TXT)</td>
+          <td><span class="no">JSON only — formats extra</span></td>
+          <td><span class="yes">All four formats — one pass</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Structured schema for AI agents</td>
+          <td><span class="partial">Raw transcript — post-processing needed</span></td>
+          <td><span class="yes">Schema-bound output — machine-ready</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Signal Loom Schema (SLS)</td>
+          <td><span class="no">Not available</span></td>
+          <td><span class="bold-neutral">Signal Loom owns this</span></td>
+        </tr>
+
+        <!-- INFRASTRUCTURE -->
+        <tr><td colspan="4" style="background:#0a1220;padding:8px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3a6aaa;">Infrastructure</td></tr>
+        <tr>
+          <td class="sticky-col col-product">Runs on your hardware</td>
+          <td><span class="no">No — cloud only</span></td>
+          <td><span class="yes">Yes — Mac Studio, Mac mini, MacBook Pro</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Works offline / air-gapped</td>
+          <td><span class="no">Requires internet</span></td>
+          <td><span class="yes">Yes — fully offline</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">API + SDK for developers</td>
+          <td><span class="yes">Yes</span></td>
+          <td><span class="yes">Yes — REST API + Python SDK</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Webhook delivery</td>
+          <td><span class="yes">Yes</span></td>
+          <td><span class="yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td class="sticky-col col-product">Usage-based billing (Stripe)</td>
+          <td><span class="yes">Yes</span></td>
+          <td><span class="yes">Yes — tiered plans</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Callout -->
+  <div class="callout">
+    <div class="callout-title">For AI Agents: This Is the Missing Layer</div>
+    <div class="callout-text">
+      AI agents can reason remarkably well — but they're blind to the majority of enterprise knowledge, because it lives in audio and video they cannot structurally interpret. <strong>Signal Loom converts raw media into structured, timestamped, machine-readable intelligence</strong> — the input format AI agents actually need. Not a transcript. Not a summary. A knowledge object with provenance.
+    </div>
+  </div>
+
+  <!-- Bottom line -->
+  <div class="bottom-line">
+    <div class="bottom-title">The honest answer.</div>
+    <div class="bottom-desc">
+      Cloud APIs are fine for prototypes. When audio data, cost at scale, privacy compliance, and infrastructure control matter — <strong>local intelligence on Apple Silicon wins on every dimension that counts.</strong><br><br>
+      Signal Loom AI runs Whisper on your Mac hardware. You own the infrastructure. Your data never leaves.
+    </div>
+  </div>
+
+  <div class="footer">
+    Signal Loom AI &nbsp;·&nbsp; signalloomai.com &nbsp;·&nbsp; © 2026 &nbsp;·&nbsp; <span style="color:#5b9cf6;">hello@signalloomai.com</span>
+  </div>
+
+</div>
+</body>
+</html>
