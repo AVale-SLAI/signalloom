@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "mkdir -p dist && cp -r *.html _redirects dist/ 2>/dev/null || true"
+    "build": "cp *.html . && cp _redirects . 2>/dev/null || true"
   }
 }
