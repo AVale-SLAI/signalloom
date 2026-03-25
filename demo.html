@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Loom AI — See It Work</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0e1a;
+    color: #e8edf5;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 52px; }
+  .logo-area { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 14px; }
+  .logo-placeholder {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: linear-gradient(135deg, #2a5fa8, #1e3d6e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .logo-text { font-size: 24px; font-weight: 700; color: #fff; }
+  .logo-text span { color: #5b9cf6; }
+  .tagline { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #4a6a9a; margin-bottom: 14px; }
+  .hero-title { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .hero-sub { font-size: 15px; color: #8899bb; max-width: 540px; margin: 0 auto; line-height: 1.7; }
+
+  /* Demo flow */
+  .flow { display: flex; flex-direction: column; gap: 0; align-items: center; }
+
+  /* Step */
+  .step { width: 100%; max-width: 640px; }
+  .step-header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #1a2d4a; border: 1px solid #2a4a7a;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #5b9cf6;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-size: 15px; font-weight: 600; color: #e8edf5; margin-bottom: 4px; }
+  .step-sub { font-size: 11px; color: #3a6aaa; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .step-desc { font-size: 13px; color: #8899bb; line-height: 1.6; margin-bottom: 8px; }
+
+  .step-card {
+    background: #0f1a2e; border: 1px solid #1e2d4a;
+    border-radius: 12px; padding: 16px 18px;
+    margin-bottom: 6px;
+  }
+  .step-card input, .step-card .code-block {
+    background: #06090f; border: 1px solid #1a2540;
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 11px; color: #a8c0e0;
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+  }
+  .step-card .code-block { display: block; width: 100%; overflow-x: auto; white-space: pre; }
+
+  /* Arrow */
+  .arrow-row { display: flex; justify-content: center; padding: 6px 0; color: #2a4a7f; font-size: 16px; height: 32px; align-items: center; }
+  .arrow-row span { font-size: 12px; color: #3a6aaa; margin-right: 6px; }
+
+  /* Output box */
+  .output-box {
+    background: #06090f; border: 1px solid #1e2d4a;
+    border-radius: 12px; padding: 16px 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px; line-height: 1.7;
+    color: #a8c0e0;
+    max-height: 240px; overflow-y: auto;
+    position: relative;
+  }
+  .output-box::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 50px; background: linear-gradient(transparent, #06090f);
+    pointer-events: none;
+  }
+  .k { color: #79b8ff; }
+  .s { color: #9ecbff; }
+  .n { color: #f8c555; }
+
+  /* Output label */
+  .out-label { font-size: 10px; color: #3a6aaa; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .out-dot { width: 6px; height: 6px; border-radius: 50%; background: #4aba7a; }
+
+  /* Metrics bar */
+  .metrics {
+    display: flex; gap: 16px; justify-content: center;
+    flex-wrap: wrap; margin: 24px 0;
+  }
+  .metric {
+    background: #0d1f3c; border: 1px solid #1a3a6e;
+    border-radius: 10px; padding: 12px 20px;
+    text-align: center; min-width: 100px;
+  }
+  .metric-val { font-size: 22px; font-weight: 700; color: #5b9cf6; }
+  .metric-label { font-size: 10px; color: #4a6a9a; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+  /* Format chips */
+  .formats { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 8px 0; }
+  .fmt-chip {
+    background: #0a1a30; border: 1px solid #1a3a6e;
+    border-radius: 6px; padding: 4px 12px;
+    font-size: 11px; color: #5b9cf6; font-weight: 500;
+  }
+
+  /* Bottom line */
+  .bottom-line {
+    text-align: center; margin-top: 44px;
+    background: linear-gradient(135deg, #0d2040, #0f2847);
+    border: 1px solid #1a4080; border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .bottom-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .bottom-desc { font-size: 14px; color: #8899bb; line-height: 1.7; max-width: 480px; margin: 0 auto; }
+  .bottom-desc strong { color: #5b9cf6; }
+
+  .footer { text-align: center; margin-top: 36px; padding-top: 20px; border-top: 1px solid #1a2540; font-size: 11px; color: #3a4f6a; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-placeholder">SL</div>
+      <div class="logo-text">Signal Loom <span>AI</span></div>
+    </div>
+    <div class="tagline">Media In · Machine Intelligence Out</div>
+    <h1 class="hero-title">Watch a File Become Intelligence</h1>
+    <p class="hero-sub">A live demonstration of exactly what happens — step by step — when you process audio through Signal Loom AI.</p>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-val">20s</div>
+      <div class="metric-label">Audio input</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">4.3s</div>
+      <div class="metric-label">Processing time</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">4</div>
+      <div class="metric-label">Segments</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">4x</div>
+      <div class="metric-label">Faster than realtime</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">0</div>
+      <div class="metric-label">Cloud API costs</div>
+    </div>
+  </div>
+
+  <div class="flow">
+
+    <!-- STEP 1: File In -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">File Goes In</div>
+          <div class="step-sub">Any audio or video format</div>
+          <div class="step-desc">MP3, MP4, M4A, WAV, MOV, FLAC, AVI, MKV — all handled identically. Video files have audio extracted automatically before processing.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="out-label"><div class="out-dot"></div>Input file</div>
+        <span class="code-block">signal-loom-api/uploads/93e2e7cb...test2.wav
+Size: 640 KB
+Format: WAV, 16kHz mono, 256 kb/s</span>
+      </div>
+    </div>
+
+    <div class="arrow-row"><span>↓</span> ffmpeg normalization</div>
+
+    <!-- STEP 2: Audio Extraction -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Audio Extraction + Normalization</div>
+          <div class="step-sub">ffmpeg → 16kHz mono WAV</div>
+          <div class="step-desc">All input is normalized to a consistent format before Whisper runs. This is where quality is locked in — Whisper gets clean, standardized input regardless of how the original was recorded.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="out-label"><div class="out-dot" style="background:#f8c555;"></div>Processing log</div>
+        <span class="code-block">[ffmpeg] Input: 640 KB WAV, 20.0 seconds
+Stream #0:0 -> #0:0 (pcm_s16le -> pcm_s16le)
+Output: 625 KB, 16kHz mono WAV
+Speed: 4,293× realtime</span>
+      </div>
+    </div>
+
+    <div class="arrow-row"><span>↓</span> MLX Whisper on Apple Silicon</div>
+
+    <!-- STEP 3: Whisper -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Whisper Transcription — MLX on Apple Silicon</div>
+          <div class="step-sub">mlx-community/whisper-large-v3-turbo · Local inference</div>
+          <div class="step-desc">Whisper runs entirely on your hardware via Apple's MLX framework. No cloud. No API calls. No per-minute costs. The audio never leaves your infrastructure. Privacy by architecture.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="out-label"><div class="out-dot" style="background:#5b9cf6;"></div>Console output</div>
+        <span class="code-block">Detected language: English
+
+[00:00.480 --> 00:05.640]
+  Hello, this is Travis Brady with AIM-T Pulse...
+
+[00:06.460 --> 00:11.160]
+  More extemporaneous narrative through the slides today.
+
+[00:12.980 --> 00:14.900]
+  Excited to tell you about our company.
+
+[00:16.340 --> 00:16.880]
+  Slide two.
+
+Segments: 4 · Chars: 186 · Time: 4.28s</span>
+      </div>
+    </div>
+
+    <div class="arrow-row"><span>↓</span> Structured output — 4 formats generated</div>
+
+    <!-- STEP 4: Output -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Structured Output — Four Formats, One Pass</div>
+          <div class="step-sub">JSON · SRT · VTT · TXT</div>
+          <div class="step-desc">Every run produces all four output formats simultaneously. JSON for AI systems, SRT and VTT for subtitles and captions, TXT for simple archival. Timestamps on every word in every format.</div>
+        </div>
+      </div>
+
+      <div class="formats">
+        <div class="fmt-chip">JSON</div>
+        <div class="fmt-chip">SRT</div>
+        <div class="fmt-chip">VTT</div>
+        <div class="fmt-chip">TXT</div>
+      </div>
+
+      <div class="step-card">
+        <div class="out-label"><div class="out-dot"></div>Structured JSON output</div>
+        <div class="output-box">{
+  <span class="k">"title"</span>: <span class="s">"93e2e7cb...test2"</span>,
+  <span class="k">"source_kind"</span>: <span class="s">"local_av"</span>,
+  <span class="k">"media_kind"</span>: <span class="s">"audio"</span>,
+  <span class="k">"language"</span>: <span class="s">"en"</span>,
+  <span class="k">"model"</span>: <span class="s">"mlx-community/whisper-large-v3-turbo"</span>,
+  <span class="k">"duration_seconds"</span>: <span class="n">20.0</span>,
+  <span class="k">"segments"</span>: [
+    {
+      <span class="k">"segment_id"</span>: <span class="s">"S1"</span>,
+      <span class="k">"start_seconds"</span>: <span class="n">0.48</span>,
+      <span class="k">"end_seconds"</span>: <span class="n">5.64</span>,
+      <span class="k">"start_time"</span>: <span class="s">"00:00:00"</span>,
+      <span class="k">"end_time"</span>: <span class="s">"00:00:06"</span>,
+      <span class="k">"text"</span>: <span class="s">"Hello, this is Travis Brady with AIM-T Pulse and AIM Elemental Health Solutions."</span>
+    },
+    {
+      <span class="k">"segment_id"</span>: <span class="s">"S2"</span>,
+      <span class="k">"start_seconds"</span>: <span class="n">6.46</span>,
+      <span class="k">"end_seconds"</span>: <span class="n">11.16</span>,
+      <span class="k">"text"</span>: <span class="s">"More extemporaneous narrative through the slides today."</span>
+    }
+  ]
+}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- What this means -->
+  <div class="bottom-line">
+    <div class="bottom-title">This is the difference that matters.</div>
+    <div class="bottom-desc">
+      A transcript is for humans. <strong>Structured, timestamped JSON is for machines.</strong><br><br>
+      Every word has a timestamp. Every segment has a time boundary. Every output carries the metadata that makes it useful to AI systems — not just readable by people. That's Signal Loom.
+    </div>
+  </div>
+
+  <div class="footer">
+    Signal Loom AI &nbsp;·&nbsp; signalloomai.com &nbsp;·&nbsp; © 2026 &nbsp;·&nbsp; <span style="color:#5b9cf6;">hello@signalloomai.com</span>
+  </div>
+
+</div>
+</body>
+</html>
