@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Loom AI — Built for Apple Silicon</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0e1a;
+    color: #e8edf5;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 52px; }
+  .logo-area { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 14px; }
+  .logo-placeholder {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: linear-gradient(135deg, #2a5fa8, #1e3d6e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .logo-text { font-size: 24px; font-weight: 700; color: #fff; }
+  .logo-text span { color: #5b9cf6; }
+  .tagline { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #4a6a9a; margin-bottom: 14px; }
+  .hero-title { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .hero-sub { font-size: 15px; color: #8899bb; max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+  /* Apple chip callout */
+  .apple-callout {
+    background: linear-gradient(135deg, #0a1628, #0d2040);
+    border: 1px solid #1a3a6e;
+    border-radius: 20px;
+    padding: 28px 32px;
+    margin-bottom: 36px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+  }
+  .apple-callout-text { }
+  .apple-callout-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .apple-callout-sub { font-size: 13px; color: #8899bb; line-height: 1.6; }
+  .apple-callout-sub strong { color: #5b9cf6; }
+  .chip-badge {
+    background: #1a2a4a; border: 1px solid #2a4a7a;
+    border-radius: 14px; padding: 16px 20px;
+    text-align: center; min-width: 140px;
+  }
+  .chip-icon { font-size: 32px; margin-bottom: 6px; }
+  .chip-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .chip-sub { font-size: 10px; color: #5b9cf6; margin-top: 2px; }
+
+  /* Specs table */
+  .section-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #3a6aaa; text-align: center; margin-bottom: 16px; }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .spec-card {
+    background: #0f1a2e; border: 1px solid #1e2d4a;
+    border-radius: 14px; padding: 18px 16px;
+    text-align: center;
+  }
+  .spec-chip { font-size: 11px; font-weight: 700; color: #5b9cf6; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .spec-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .spec-ram { font-size: 12px; color: #8899bb; margin-bottom: 6px; }
+  .spec-note { font-size: 10px; color: #4a6a9a; line-height: 1.5; }
+  .spec-note strong { color: #4aba7a; }
+
+  .recommended {
+    border-color: #1a4a6e;
+    background: linear-gradient(135deg, #0a1e30, #0f1a2e);
+  }
+  .recommended::before {
+    content: "★ Recommended";
+    display: block;
+    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+    color: #5b9cf6; margin-bottom: 8px;
+  }
+
+  /* Use case cards */
+  .usecase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .usecase-card {
+    background: #0f1a2e; border: 1px solid #1e2d4a;
+    border-radius: 14px; padding: 20px;
+  }
+  .usecase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .usecase-icon { font-size: 24px; }
+  .usecase-title { font-size: 14px; font-weight: 700; color: #fff; }
+  .usecase-sub { font-size: 11px; color: #5b9cf6; }
+  .usecase-desc { font-size: 12px; color: #8899bb; line-height: 1.6; margin-bottom: 10px; }
+  .usecase-why { font-size: 11px; color: #4aba7a; line-height: 1.5; }
+  .usecase-why strong { color: #5b9cf6; }
+
+  /* Comparison */
+  .vs-box {
+    background: #0a1220; border: 1px solid #1e2d4a;
+    border-radius: 14px; padding: 20px 24px;
+    margin-bottom: 36px;
+  }
+  .vs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .vs-col { text-align: center; flex: 1; }
+  .vs-vs { font-size: 12px; font-weight: 700; color: #3a6aaa; padding: 0 16px; }
+  .vs-name { font-size: 14px; font-weight: 700; color: #fff; }
+  .vs-sub { font-size: 10px; color: #4a6a9a; margin-top: 2px; }
+  .vs-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #111a28; font-size: 12px; }
+  .vs-row:last-child { border-bottom: none; }
+  .vs-dim { flex: 1; color: #8899bb; }
+  .vs-local { flex: 1; text-align: center; color: #4aba7a; font-weight: 600; }
+  .vs-cloud { flex: 1; text-align: center; color: #e84a6a; font-weight: 600; }
+
+  /* CTA */
+  .cta-strip {
+    text-align: center; margin-bottom: 36px;
+    background: linear-gradient(135deg, #0d2040, #0f2847);
+    border: 1px solid #1a4080; border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .cta-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .cta-sub { font-size: 13px; color: #8899bb; margin-bottom: 16px; }
+  .cta-form { display: flex; gap: 10px; justify-content: center; max-width: 380px; margin: 0 auto; }
+  .cta-input {
+    flex: 1; background: #0a1220; border: 1px solid #1e2d4a;
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 13px; color: #e8edf5; outline: none;
+  }
+  .cta-input::placeholder { color: #4a6a9a; }
+  .cta-input:focus { border-color: #3a6aaa; }
+  .cta-btn {
+    background: #2a5fa8; border: 1px solid #3a6aaa;
+    border-radius: 10px; padding: 10px 18px;
+    font-size: 13px; font-weight: 600; color: #fff; cursor: pointer;
+  }
+  .cta-note { font-size: 11px; color: #4a6a9a; margin-top: 10px; }
+
+  /* Bottom */
+  .bottom-line {
+    text-align: center; margin-top: 0;
+    background: linear-gradient(135deg, #0d1f3c 0%, #0a1428 100%);
+    border: 1px solid #1e3060; border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .bottom-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .bottom-desc { font-size: 13px; color: #8899bb; line-height: 1.7; }
+  .bottom-desc strong { color: #5b9cf6; }
+
+  .footer { text-align: center; margin-top: 36px; padding-top: 20px; border-top: 1px solid #1a2540; font-size: 11px; color: #3a4f6a; }
+
+  @media (max-width: 700px) {
+    .apple-callout { grid-template-columns: 1fr; }
+    .specs-grid { grid-template-columns: 1fr; }
+    .usecase-grid { grid-template-columns: 1fr; }
+    .vs-header { flex-direction: column; gap: 8px; }
+    .vs-row { flex-direction: column; gap: 4px; }
+    .cta-form { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-placeholder">SL</div>
+      <div class="logo-text">Signal Loom <span>AI</span></div>
+    </div>
+    <div class="tagline">Media In · Machine Intelligence Out</div>
+    <h1 class="hero-title">Built for Apple Silicon.<br>Any M-Series Chip. Full Speed Ahead.</h1>
+    <p class="hero-sub">Signal Loom AI runs MLX Whisper on any Apple M-series chip — from M1 through M5 Ultra. M1/M2 handles light workloads. M3 Ultra and M5 Ultra crush hundreds of hours of audio per day, at a fraction of cloud API cost.</p>
+  </div>
+
+  <!-- Apple Silicon Callout -->
+  <div class="apple-callout">
+    <div class="apple-callout-text">
+      <div class="apple-callout-title">Apple Silicon isn't just a processor. It's an ML inference advantage.</div>
+      <div class="apple-callout-sub">
+        Apple's M-series chips feature <strong>unified memory architecture</strong> — CPU, GPU, and Neural Engine share the same high-bandwidth memory pool. MLX Whisper runs directly on this architecture, delivering <strong> Whisper-class quality at a fraction of cloud API cost</strong> — with privacy built in by design.
+      </div>
+    </div>
+    <div class="chip-badge">
+      <div class="chip-icon">🍎</div>
+      <div class="chip-name">Apple Silicon</div>
+      <div class="chip-sub">M1 · M2 · M3 · M4 · M5</div>
+      <div class="chip-sub" style="margin-top:4px; color:#8899bb;">All M-Series Chips</div>
+    </div>
+  </div>
+
+  <!-- Minimum Specs -->
+  <div class="section-title">System Requirements</div>
+  <div class="specs-grid">
+    <div class="spec-card">
+      <div class="spec-chip">Minimum</div>
+      <div class="spec-name">MacBook Air M1</div>
+      <div class="spec-ram">8GB Unified Memory</div>
+      <div class="spec-note">
+        Whisper-tiny, whisper-base<br>
+        <strong>~10x realtime</strong><br>
+        Good for testing + light use
+      </div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-chip">Minimum</div>
+      <div class="spec-name">MacBook Pro M1 Pro</div>
+      <div class="spec-ram">16GB Unified Memory</div>
+      <div class="spec-note">
+        whisper-large-v3-turbo<br>
+        <strong>~80-100x realtime</strong><br>
+        Real production workloads
+      </div>
+    </div>
+    <div class="spec-card recommended">
+      <div class="spec-chip">Recommended</div>
+      <div class="spec-name">Mac Studio M4 Max</div>
+      <div class="spec-ram">64GB – 128GB Unified Memory</div>
+      <div class="spec-note">
+        whisper-large-v3<br>
+        <strong>~200x realtime+</strong><br>
+        Unlimited 24/7 production
+      </div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-chip">High Performance</div>
+      <div class="spec-name">Mac Studio M3 Ultra</div>
+      <div class="spec-ram">256GB Unified Memory</div>
+      <div class="spec-note">
+        whisper-large-v3<br>
+        <strong>~400x realtime+</strong><br>
+        Extreme batch processing
+      </div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-chip">Future-Ready</div>
+      <div class="spec-name">Mac Pro M5 Ultra</div>
+      <div class="spec-ram">512GB+ Unified Memory</div>
+      <div class="spec-note">
+        whisper-large-v3<br>
+        <strong>~800x realtime+</strong><br>
+        Enterprise-class throughput
+      </div>
+    </div>
+  </div>
+
+  <!-- When Signal Loom Wins -->
+  <div class="section-title">When Local Apple Silicon Wins</div>
+  <div class="usecase-grid">
+    <div class="usecase-card">
+      <div class="usecase-header">
+        <div class="usecase-icon">✈️</div>
+        <div>
+          <div class="usecase-title">Remote / Traveling</div>
+          <div class="usecase-sub">MacBook Pro anywhere</div>
+        </div>
+      </div>
+      <div class="usecase-desc">No reliable internet — on a plane, in a hotel, at a conference with blocked networks.</div>
+      <div class="usecase-why"><strong>Signal Loom wins:</strong> Full transcription, zero internet required. Process sensitive calls in any location. Cloud APIs fail. Signal Loom doesn't.</div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-header">
+        <div class="usecase-icon">🔒</div>
+        <div>
+          <div class="usecase-title">Privacy-Sensitive Content</div>
+          <div class="usecase-sub">Healthcare · Legal · Finance</div>
+        </div>
+      </div>
+      <div class="usecase-desc">Patient calls, attorney-client meetings, earnings calls with material non-public information.</div>
+      <div class="usecase-why"><strong>Signal Loom wins:</strong> Audio never touches a third-party cloud. Data never leaves your machine. Full compliance without BAAs or cloud configs.</div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-header">
+        <div class="usecase-icon">🤖</div>
+        <div>
+          <div class="usecase-title">AI Agent Developers</div>
+          <div class="usecase-sub">Mac Studio or MacBook Pro</div>
+        </div>
+      </div>
+      <div class="usecase-desc">Building agents that need audio intelligence. Every API call to a cloud provider logs your audio URL and data.</div>
+      <div class="usecase-why"><strong>Signal Loom wins:</strong> No cloud logging of your audio URLs, API keys, or content. Your agent's training data and audio sources stay private.</div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-header">
+        <div class="usecase-icon">⚡</div>
+        <div>
+          <div class="usecase-title">High Volume / 24/7 Operations</div>
+          <div class="usecase-sub">Mac Studio M4 Max — always on</div>
+        </div>
+      </div>
+      <div class="usecase-desc">Transcribing call centers, podcasts, interview archives. Cloud API costs scale with every minute. At 10,000 minutes/month, cloud costs $60–240.</div>
+      <div class="usecase-why"><strong>Signal Loom wins:</strong> Hardware cost + electricity. At 10,000 min/month, Signal Loom costs under $2 in power. Unlimited for $0 additional.</div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-header">
+        <div class="usecase-icon">🏢</div>
+        <div>
+          <div class="usecase-title">Enterprise Mac Fleet</div>
+          <div class="usecase-sub">IT-managed MacBook fleet</div>
+        </div>
+      </div>
+      <div class="usecase-desc">Your company's developer and data science teams already have M-series Macs. Deploy Signal Loom to your existing hardware.</div>
+      <div class="usecase-why"><strong>Signal Loom wins:</strong> No new cloud infrastructure to procure, configure, or pay for. Use the Macs you already own.</div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-header">
+        <div class="usecase-icon">🎙️</div>
+        <div>
+          <div class="usecase-title">Podcasters & Content Creators</div>
+          <div class="usecase-sub">MacBook or iMac in the studio</div>
+        </div>
+      </div>
+      <div class="usecase-desc">Transcribing interviews, generating show notes, creating timestamps for episodes. Cloud APIs charge per minute of audio processed.</div>
+      <div class="usecase-why"><strong>Signal Loom wins:</strong> One-time hardware cost. Process unlimited episodes. Generate SRT/VTT files for YouTube and podcast platforms instantly.</div>
+    </div>
+  </div>
+
+  <!-- Direct comparison -->
+  <div class="section-title">Signal Loom vs. Cloud API — By Scenario</div>
+  <div class="vs-box">
+    <div class="vs-header">
+      <div class="vs-col">
+        <div class="vs-name">🍎 Signal Loom AI</div>
+        <div class="vs-sub">Apple Silicon + MLX</div>
+      </div>
+      <div class="vs-vs">VS</div>
+      <div class="vs-col">
+        <div class="vs-name">☁️ Cloud Whisper API</div>
+        <div class="vs-sub">OpenAI · Google · AWS · Azure</div>
+      </div>
+    </div>
+
+    <div class="vs-row">
+      <div class="vs-dim">100 min/month</div>
+      <div class="vs-local">~$0.01 in power</div>
+      <div class="vs-cloud">$0.60 – $2.40</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">1,000 min/month</div>
+      <div class="vs-local">~$0.10 in power</div>
+      <div class="vs-cloud">$6 – $24</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">10,000 min/month</div>
+      <div class="vs-local">~$1 in power</div>
+      <div class="vs-cloud">$60 – $240</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">100,000 min/month</div>
+      <div class="vs-local">~$10 in power</div>
+      <div class="vs-cloud">$600 – $2,400</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">Privacy (audio sent to cloud?)</div>
+      <div class="vs-local">Never — local only</div>
+      <div class="vs-cloud">Every file</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">Works offline / air-gapped?</div>
+      <div class="vs-local">Yes — fully offline</div>
+      <div class="vs-cloud">No — requires internet</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">Works on airplane / remote?</div>
+      <div class="vs-local">Yes — anywhere</div>
+      <div class="vs-cloud">No — blocked</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">API key logging by provider?</div>
+      <div class="vs-local">No third-party logs</div>
+      <div class="vs-cloud">All calls logged</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">Latency</div>
+      <div class="vs-local">Zero network latency</div>
+      <div class="vs-cloud">50–500ms per request</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-dim">Cost predictability</div>
+      <div class="vs-local">Fixed — hardware + power</div>
+      <div class="vs-cloud">Variable — usage-based</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-strip">
+    <div class="cta-title">Have an M-series Mac? You already own the hardware.</div>
+    <div class="cta-sub">Join the beta — run Whisper on your Mac at hardware cost. First 100 users lock in 3-year founder-tier pricing.</div>
+    <form class="cta-form" onsubmit="return false;">
+      <input class="cta-input" type="email" placeholder="your@email.com" />
+      <button class="cta-btn">Request Beta Access</button>
+    </form>
+    <div class="cta-note">macOS required · M1, M2, M3, or M4 chip · No cloud account needed</div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom-line">
+    <div class="bottom-title">The bottom line.</div>
+    <div class="bottom-desc">
+      If you own a MacBook Pro M1 Pro or better, you already have a <strong>world-class speech-to-text machine</strong>. Signal Loom AI unlocks it. No per-minute billing. No cloud dependency. No data leaving your desk. <strong>Your Mac was always enough. Now it has the software to prove it.</strong>
+    </div>
+  </div>
+
+  <div class="footer">
+    Signal Loom AI &nbsp;·&nbsp; signalloomai.com &nbsp;·&nbsp; © 2026 &nbsp;·&nbsp; <span style="color:#5b9cf6;">hello@signalloomai.com</span>
+  </div>
+
+</div>
+</body>
+</html>

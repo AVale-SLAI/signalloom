@@ -17,7 +17,7 @@ export async function onRequest({ request, next, env }) {
   // Proxy all /v1/* API calls
   if (url.pathname.startsWith("/v1")) {
     const proxyPath = url.pathname + (url.search || "");
-    const proxyUrl = "https://relatively-extension-secretary-charles.trycloudflare.com" + proxyPath;
+    const proxyUrl = "https://portland-negotiations-teens-year.trycloudflare.com" + proxyPath;
     
     const headers = {};
     for (const [k, v] of request.headers.entries()) {

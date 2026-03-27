@@ -1,0 +1,18 @@
+20-SECOND ELEVATOR PITCH — SIGNAL LOOM AI
+==========================================
+
+Every AI system hits the same wall.
+
+Raw transcript text — no speakers, no topics, no structure. Just words.
+
+Signal Loom AI turns audio into structured machine intelligence.
+
+Speaker labels. Timestamps. Entities. Topics. JSON.
+
+One upload. One pass.
+
+No cloud API. No per-minute fees. Built on Apple Silicon.
+
+Media in. Machine intelligence out.
+
+Signalloomai.com. Start free.

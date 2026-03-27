@@ -732,7 +732,9 @@
       <li><a href="/mac-users.html">For Mac Users</a></li>
       <li><a href="/demo.html">See it work</a></li>
       <li><a href="/beta.html">Beta Program</a></li>
+      <li><a href="/whitepaper.html">Whitepaper</a></li>
       <li><a href="#getting-started">Docs</a></li>
+      <li><a href="/guide.html">Guide</a></li>
       <li><a href="https://github.com/signalloom/signalloom" class="btn-nav" target="_blank">GitHub</a></li>
     </ul>
   </div>
@@ -774,7 +776,7 @@
       <div class="terminal-output">
         <span class="t-success">✓</span> <span class="t-comment">Successfully installed signalloom</span>
       </div>
-      <div style="margin-top:12px"><span class="t-prompt">$</span> <span class="t-cmd">curl -X POST https://relatively-extension-secretary-charles.trycloudflare.com/v1/transcribe \<br>  -H "Authorization: Bearer $SL_API_KEY" \<br>  -F file=@recording.mp4</span></div>
+      <div style="margin-top:12px"><span class="t-prompt">$</span> <span class="t-cmd">curl -X POST https://patches-deputy-awesome-ham.trycloudflare.com/v1/transcribe \<br>  -H "Authorization: Bearer $SL_API_KEY" \<br>  -F file=@recording.mp4</span></div>
       <div class="terminal-output">
         <span class="t-success">✓</span> <span class="t-string">"status": "success"</span> — processed in <span class="t-num">1.4s</span>
       </div>
@@ -811,10 +813,15 @@
           <span class="format-tag">.mp3</span>
           <span class="format-tag">.webm</span>
           <span class="format-tag">.m4a</span>
+          <span class="format-tag" style="background: var(--green); color: #000;">YouTube*</span>
+          <span class="format-tag" style="background: var(--green); color: #000;">TikTok</span>
+          <span class="format-tag" style="background: var(--green); color: #000;">GDrive</span>
+          <span class="format-tag" style="background: var(--green); color: #000;">Dropbox</span>
           <span class="format-tag">.wav</span>
           <span class="format-tag">.ogg</span>
           <span class="format-tag">.flac</span>
         </div>
+        <p style="font-size:12px; color: var(--text-muted); margin-top:10px; line-height:1.5;">*YouTube link ingestion is best-effort due to platform anti-bot protections. Direct file links, Google Drive, Dropbox, Box, and similar hosted files are currently the most reliable.</p>
       </div>
 
       <div class="flow-arrow">
@@ -1001,27 +1008,44 @@
       </div>
 
       <div class="pricing-card reveal">
-        <div class="pricing-tier">Scale</div>
+        <div class="pricing-tier">Dev Pro</div>
         <div class="pricing-price">$349 <span>/mo</span></div>
-        <div class="pricing-desc">For high-volume production</div>
+        <div class="pricing-desc">For power users and solo builders</div>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
           <li><span class="pricing-check">✓</span> 25,000 min/month</li>
           <li><span class="pricing-check">✓</span> Unlimited concurrent jobs</li>
           <li><span class="pricing-check">✓</span> Everything in Pro</li>
-          <li><span class="pricing-check">✓</span> Custom models</li>
-          <li><span class="pricing-check">✓</span> SSO / SAML</li>
+          <li><span class="pricing-check">✓</span> Custom model fine-tuning</li>
           <li><span class="pricing-check">✓</span> SLA guarantee</li>
-          <li><span class="pricing-check">✓</span> Dedicated support</li>
+          <li><span class="pricing-check">✓</span> Priority support</li>
         </ul>
         <div class="pricing-cta">
-          <a href="mailto:sales@signalloomai.com" class="btn btn-secondary" target="_blank">Contact sales</a>
+          <a href="/checkout.html?tier=scale" class="btn btn-secondary">Get started</a>
+        </div>
+      </div>
+
+      <div class="pricing-card reveal">
+        <div class="pricing-tier">Enterprise</div>
+        <div class="pricing-price">$1,595 <span>/mo</span></div>
+        <div class="pricing-desc">Up to 5 seats · 100K mins/mo</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li><span class="pricing-check">✓</span> Up to 5 seats included</li>
+          <li><span class="pricing-check">✓</span> Unlimited concurrent jobs</li>
+          <li><span class="pricing-check">✓</span> Everything in Dev Pro</li>
+          <li><span class="pricing-check">✓</span> SSO / SAML</li>
+          <li><span class="pricing-check">✓</span> Dedicated account manager</li>
+          <li><span class="pricing-check">✓</span> Invoice billing / Net-30</li>
+        </ul>
+        <div class="pricing-cta">
+          <a href="/checkout.html?tier=enterprise" class="btn btn-secondary">Get started</a>
         </div>
       </div>
     </div>
 
     <p style="text-align:center; margin-top:32px; font-size:14px; color: var(--text-muted);" class="reveal">
-      Need more? <a href="mailto:sales@signalloomai.com" style="color: var(--accent-bright); text-decoration: none;">Talk to us</a> about Enterprise pricing — custom volumes, on-prem deployment, and dedicated infrastructure.
+      Need a custom volume or on-prem deployment? <a href="mailto:hello@signalloomai.com" style="color: var(--accent-bright); text-decoration: none;">Talk to us</a>.
     </p>
   </div>
 </section>
@@ -1109,10 +1133,11 @@
     <ul class="footer-links">
       <li><a href="/demo.html">See it work</a></li>
       <li><a href="/beta.html">Beta Program</a></li>
+      <li><a href="/whitepaper.html">Whitepaper</a></li>
       <li><a href="/why-local.html">Why Local</a></li>
       <li><a href="/mac-users.html">For Mac Users</a></li>
       <li><a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a></li>
-      <li><a href="https://relatively-extension-secretary-charles.trycloudflare.com/docs" target="_blank">Docs</a></li>
+      <li><a href="https://patches-deputy-awesome-ham.trycloudflare.com/docs" target="_blank">Docs</a></li>
       <li><a href="https://signup.html" target="_blank">Dashboard</a></li>
       <li><a href="mailto:hello@signalloomai.com">Contact</a></li>
       <li><a href="privacy.html" target="_blank">Privacy</a></li>

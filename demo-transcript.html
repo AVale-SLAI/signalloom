@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    background: #0d0b16;
+    color: #e0ddf0;
+    width: 712px;
+    height: 430px;
+    padding: 20px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2e2b42;
+  }
+  .logo { color: #a78bfa; font-weight: bold; font-size: 11px; letter-spacing: 1px; }
+  .badge { background: #1a1530; border: 1px solid #3d3a58; border-radius: 4px; padding: 2px 8px; font-size: 10px; color: #86efac; }
+  .meta { font-size: 10px; color: #6b6280; margin-bottom: 12px; }
+  .segment { margin-bottom: 8px; }
+  .seg-header { display: flex; gap: 10px; margin-bottom: 2px; }
+  .timestamp { color: #fb923c; font-size: 11px; }
+  .speaker { color: #38bdf8; font-size: 11px; font-weight: bold; }
+  .conf { color: #4ade80; font-size: 10px; }
+  .seg-text { color: #d4d0e8; font-size: 12px; line-height: 1.5; }
+  .inaudible { color: #6b6280; font-style: italic; }
+  .speaker-unknown { color: #9d97bf; }
+  .footer { margin-top: 14px; padding-top: 10px; border-top: 1px solid #2e2b42; font-size: 10px; color: #6b6280; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <span class="logo">SIGNAL LOOM AI</span>
+    <span class="badge">✓ Speaker Diarization</span>
+  </div>
+  <div class="meta">File: quarterly-review.mp4 &nbsp;|&nbsp; Duration: 01:47:23 &nbsp;|&nbsp; Speakers: 4 &nbsp;|&nbsp; Language: en</div>
+
+  <div class="segment">
+    <div class="seg-header">
+      <span class="timestamp">[00:00:12 → 00:00:28]</span>
+      <span class="speaker speaker-unknown">SPEAKER_UNKNOWN</span>
+      <span class="conf">—</span>
+    </div>
+    <div class="seg-text inaudible">[Background chatter / Audio not recoverable]</div>
+  </div>
+
+  <div class="segment">
+    <div class="seg-header">
+      <span class="timestamp">[00:00:29 → 00:01:04]</span>
+      <span class="speaker">SPEAKER_00</span>
+      <span class="conf">confidence: 0.97</span>
+    </div>
+    <div class="seg-text">Alright, let's get started. The goal for today's Q3 review is to walk through what the platform team shipped in July and align on August priorities before the board meeting next week.</div>
+  </div>
+
+  <div class="segment">
+    <div class="seg-header">
+      <span class="timestamp">[00:01:08 → 00:01:43]</span>
+      <span class="speaker">SPEAKER_01</span>
+      <span class="conf">confidence: 0.94</span>
+    </div>
+    <div class="seg-text">Sounds good. I also want to flag the latency regression we saw on the recommendation endpoint last Tuesday — it affected about twelve percent of users during peak hours.</div>
+  </div>
+
+  <div class="segment">
+    <div class="seg-header">
+      <span class="timestamp">[00:01:47 → 00:02:19]</span>
+      <span class="speaker">SPEAKER_00</span>
+      <span class="conf">confidence: 0.96</span>
+    </div>
+    <div class="seg-text">Good catch. We've already rolled back the offending commit. The post-mortem is in Notion under eng/post-mortems/2026-Q3. I'll share the link in the follow-up.</div>
+  </div>
+
+  <div class="segment">
+    <div class="seg-header">
+      <span class="timestamp">[00:02:22 → 00:02:51]</span>
+      <span class="speaker">SPEAKER_02</span>
+      <span class="conf">confidence: 0.91</span>
+    </div>
+    <div class="seg-text">To add to that — the ML team also shipped the new embedding pipeline ahead of schedule. We're seeing a forty percent reduction in retrieval latency on the vector search queries.</div>
+  </div>
+
+  <div class="footer">
+    <span>Signal Loom AI — Media In. Machine Intelligence Out.</span>
+    <span>transcribed by Aster Vale</span>
+  </div>
+</body>
+</html>

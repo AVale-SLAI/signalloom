@@ -344,9 +344,9 @@
   <div class="card">
     <!-- Form state -->
     <div id="form-state">
-      <div class="badge">100 mins/month · Your data helps us improve</div>
-      <h1>Start building free</h1>
-      <p class="tagline">We transcribe your media. You help us build better AI. Fair trade.</p>
+      <div class="badge">100 mins/month free · Structured intelligence for AI workflows</div>
+      <h1>Get your free Signal Loom API key</h1>
+      <p class="tagline">Start with 100 free minutes each month. Media in, structured intelligence out.</p>
 
       <form id="signup-form" novalidate>
         <div class="form-group">
@@ -373,10 +373,10 @@
 
       <div class="perks">
         <div class="perk"><span class="perk-icon">⚡</span> 100 min/month free</div>
-        <div class="perk"><span class="perk-icon">📊</span> Anonymized usage data</div>
         <div class="perk"><span class="perk-icon">🔑</span> API key instantly</div>
         <div class="perk"><span class="perk-icon">📡</span> Sync + async API</div>
         <div class="perk"><span class="perk-icon">🧠</span> Structured JSON output</div>
+        <div class="perk"><span class="perk-icon">🧭</span> Built for agent & RAG workflows</div>
         <div class="perk"><span class="perk-icon">🌐</span> Any language</div>
       </div>
     </div>
@@ -406,10 +406,8 @@
   const successState = document.getElementById('success-state');
   const keyText = document.getElementById('key-text');
 
-  // API endpoint — update for local dev vs production
-  // Local dev:   const API_BASE = 'http://localhost:18790';
-  // Production:   const API_BASE = 'https://relatively-extension-secretary-charles.trycloudflare.com';
-  const API_BASE = 'https://relatively-extension-secretary-charles.trycloudflare.com';
+  // API endpoint — prefer explicit runtime configuration, otherwise same-origin.
+  const API_BASE = window.SIGNAL_LOOM_API_BASE || window.location.origin;
 
   function showError(msg) {
     errorMsg.textContent = msg;
@@ -471,10 +469,10 @@
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/v1/keys`, {
+      const res = await fetch(`${API_BASE}/v1/account`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, plan: 'free' }),
+        body: JSON.stringify({ email, name }),
       });
 
       const data = await res.json();

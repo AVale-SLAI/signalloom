@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Loom AI — Quick Start Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0e1a;
+    color: #e8edf5;
+    min-height: 100vh;
+    padding: 40px 20px;
+    line-height: 1.6;
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 2.2em; margin-bottom: 8px; color: #fff; }
+  h2 { font-size: 1.4em; margin: 36px 0 12px; color: #5b9cf6; }
+  h3 { font-size: 1.1em; margin: 20px 0 8px; color: #c4f5a9; }
+  p { margin: 10px 0; color: #c8d0de; }
+  a { color: #5b9cf6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .subtitle { color: #8a94a8; font-size: 1.1em; margin-bottom: 40px; }
+  .step { background: #12162b; border: 1px solid #1e2640; border-radius: 12px; padding: 24px; margin: 20px 0; }
+  .step-num { display: inline-block; background: #1e3d6e; color: #5b9cf6; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; margin-bottom: 12px; }
+  .code-block { background: #080b14; border: 1px solid #1e2640; border-radius: 8px; padding: 16px; margin: 12px 0; font-family: 'Courier New', monospace; font-size: 0.88em; overflow-x: auto; }
+  .code-block .comment { color: #5b7a9a; }
+  .code-block .cmd { color: #c4f5a9; }
+  .code-block .str { color: #f5a9c4; }
+  .code-block .key { color: #5b9cf6; }
+  .note { background: #0f1e3a; border-left: 3px solid #5b9cf6; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0; font-size: 0.9em; color: #8a94a8; }
+  .warning { background: #1e1a0f; border-left: 3px solid #f5c25b; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0; font-size: 0.9em; color: #c8b08a; }
+  ul { margin: 8px 0 8px 20px; color: #c8d0de; }
+  li { margin: 4px 0; }
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #1e2640; }
+  .nav-logo { font-size: 1.1em; font-weight: 700; color: #fff; }
+  .nav-logo span { color: #5b9cf6; }
+  .nav-links a { color: #8a94a8; margin-left: 20px; font-size: 0.9em; }
+  .nav-links a:hover { color: #5b9cf6; }
+  .tier-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  .tier-table th, .tier-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #1e2640; }
+  .tier-table th { color: #5b9cf6; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.05em; }
+  .tier-table td { color: #c8d0de; }
+  .tier-table tr:hover td { background: #12162b; }
+  code { background: #080b14; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.88em; color: #c4f5a9; }
+</style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav">
+    <div class="nav-logo">Signal Loom <span>AI</span></div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/demo.html">Demo</a>
+          <a href="/guide.html">Guide</a>
+      <a href="/guide.html">Guide</a>
+    </div>
+  </nav>
+
+  <h1>Quick Start Guide</h1>
+  <p class="subtitle">From zero to structured audio intelligence in under 5 minutes.</p>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-num">Step 1 — Choose Your Plan</div>
+    <p>Sign up at <a href="https://signalloomai.com" target="_blank">signalloomai.com</a> and choose a plan that fits your volume:</p>
+    <table class="tier-table">
+      <tr><th>Plan</th><th>Price</th><th>Minutes/mo</th><th>Best for</th></tr>
+      <tr><td>Starter</td><td>$25/mo</td><td>1,000</td><td>Indie devs, testing</td></tr>
+      <tr><td>Professional</td><td>$99/mo</td><td>5,000</td><td>Teams, production apps</td></tr>
+      <tr><td>Dev Pro</td><td>$349/mo</td><td>25,000</td><td>Power users, solo builders</td></tr>
+      <tr><td>Enterprise</td><td>$1,595/mo</td><td>100,000</td><td>Teams of up to 5, business</td></tr>
+    </table>
+    <p>Click <strong>Get started</strong> on your chosen tier — you'll be redirected to Stripe to complete payment. After payment, you'll receive an <strong>API key</strong> via email.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-num">Step 2 — Get Your API Key</div>
+    <p>After subscribing, your API key is delivered to your inbox. It looks like this:</p>
+    <div class="code-block">
+      <span class="key">slo_</span><span class="cmd">abc123xyz789def456ghi</span><span class="comment">  ← your key, keep it private</span>
+    </div>
+    <p>Your key is also visible in the <a href="https://dashboard.stripe.com" target="_blank">Stripe Dashboard</a> under your subscription, or contact <a href="mailto:hello@signalloomai.com">hello@signalloomai.com</a> if you need it resent.</p>
+    <div class="warning">⚠️ Never share your API key publicly or commit it to version control. Use environment variables in production.</div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-num">Step 3 — Make Your First Transcription</div>
+
+    <h3>Option A — Paste a URL (no upload needed!)</h3>
+    <div class="code-block">
+      <span class="comment"># Paste any URL — YouTube (best-effort), TikTok, Google Drive, Dropbox, direct links</span><br>
+      curl -X POST https://api.signalloomai.com/v1/transcribe \<br>
+      &nbsp;&nbsp;-H <span class="str">"Authorization: Bearer $SL_API_KEY"</span> \<br>
+      &nbsp;&nbsp;-F <span class="str">"url=https://www.youtube.com/watch?v=..."</span> \<br>
+      &nbsp;&nbsp;-F <span class="str">"speakers=true"</span> \<br>
+      &nbsp;&nbsp;-F <span class="str">"entities=true"</span>
+    </div>
+
+    <h3>Option B — Upload a File (cURL)</h3>
+    <div class="code-block">
+      <span class="comment"># Upload directly — up to 5GB supported</span><br>
+      curl -X POST https://api.signalloomai.com/v1/transcribe \<br>
+      &nbsp;&nbsp;-H <span class="str">"Authorization: Bearer $SL_API_KEY"</span> \<br>
+      &nbsp;&nbsp;-F <span class="str">"file=@meeting.mp4"</span> \<br>
+      &nbsp;&nbsp;-F <span class="str">"speakers=true"</span> \<br>
+      &nbsp;&nbsp;-F <span class="str">"entities=true"</span>
+    </div>
+
+    <h3>Option C — Python SDK</h3>
+    <div class="code-block">
+      <span class="key">from</span> signalloom <span class="key">import</span> SignalLoom<br><br>
+      client = SignalLoom(api_key=<span class="str">"slo_abc123xyz..."</span>)<br><br>
+      result = client.transcribe(<br>
+      &nbsp;&nbsp;file=<span class="str">"./meeting.mp4"</span>,<br>
+      &nbsp;&nbsp;speakers=<span class="key">True</span>,<br>
+      &nbsp;&nbsp;entities=<span class="key">True</span><br>
+      )<br><br>
+      print(result.knowledge)  <span class="comment"># → structured JSON</span>
+    </div>
+
+    <h3>Option D — JavaScript / Node.js</h3>
+    <div class="code-block">
+      <span class="key">import</span> { SignalLoom } <span class="key">from</span> <span class="str">'@signalloom/sdk'</span>;<br><br>
+      <span class="key">const</span> client = <span class="key">new</span> SignalLoom({ apiKey: <span class="str">'slo_abc123xyz...'</span> });<br><br>
+      <span class="key">const</span> result = <span class="key">await</span> client.transcribe({<br>
+      &nbsp;&nbsp;file: <span class="str">'./meeting.mp4'</span>,<br>
+      &nbsp;&nbsp;speakers: <span class="key">true</span>,<br>
+      &nbsp;&nbsp;entities: <span class="key">true</span><br>
+      });<br><br>
+      console.log(result.knowledge);  <span class="comment">// → structured JSON</span>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-num">Step 4 — Understand the Output</div>
+    <p>Signal Loom doesn't just return plain text. You get a structured <strong>Knowledge Object</strong> — machine-readable JSON designed for AI consumption:</p>
+    <div class="code-block">
+<pre>{
+  "transcript": "Patient reports chest pain starting Tuesday...",
+  "speakers": [
+    { "id": "SPEAKER_00", "name": "Dr. Chen", "type": "physician" },
+    { "id": "SPEAKER_01", "name": "Patient", "type": "patient" }
+  ],
+  "segments": [
+    {
+      "speaker": "SPEAKER_00",
+      "start": 0.0,
+      "end": 4.2,
+      "text": "Tell me about the chest pain."
+    }
+  ],
+  "entities": [
+    { "type": "SYMPTOM", "value": "chest pain", "speaker": "SPEAKER_01", "start": 2.1 },
+    { "type": "DATE", "value": "Tuesday", "speaker": "SPEAKER_01", "start": 5.3 }
+  ],
+  "topics": [
+    { "label": "Chief Complaint", "start": 0.0, "end": 45.2 }
+  ]
+}</pre>
+    </div>
+    <p>This structure plugs directly into RAG pipelines, agent memory, knowledge graphs, or any downstream AI system — no parsing required.</p>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <div class="step-num">Step 5 — API Reference</div>
+    <p>The Signal Loom API is REST-based and lives at:</p>
+    <div class="code-block">
+      https://api.signalloomai.com/v1/
+    </div>
+    <h3>Endpoints</h3>
+    <ul>
+      <li><code>POST /v1/transcribe</code> — Upload media, get full pipeline (transcription + speakers + entities)</li>
+      <li><code>GET /v1/health</code> — Service health check</li>
+      <li><code>GET /v1/stripe/prices</code> — View available pricing tiers</li>
+      <li><code>POST /v1/stripe/checkout</code> — Create Stripe checkout session</li>
+    </ul>
+    <h3>Request Options</h3>
+    <table class="tier-table">
+      <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      <tr><td>file</td><td>multipart</td><td>—</td><td>Audio or video file (mp3, mp4, wav, m4a, flac)</td></tr>
+      <tr><td>speakers</td><td>bool</td><td>false</td><td>Enable speaker diarization</td></tr>
+      <tr><td>entities</td><td>bool</td><td>false</td><td>Enable named entity extraction</td></tr>
+      <tr><td>topics</td><td>bool</td><td>false</td><td>Enable topic segmentation</td></tr>
+    </table>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step">
+    <div class="step-num">Step 6 — Supported File Formats</div>
+    <p>Signal Loom accepts the following formats natively:</p>
+    <table class="tier-table">
+      <tr><th>Type</th><th>Formats</th></tr>
+      <tr><td>Audio</td><td>mp3, wav, m4a, flac, ogg, webm, aac</td></tr>
+      <tr><td>Video</td><td>mp4, mov, avi, mkv, webm</td></tr>
+    </table>
+    <div class="note">💡 For files over 5GB, use URL ingestion (paste a Google Drive, Dropbox, Box, Digify, or direct file link — we download it server-side, no upload needed). Direct upload supports files up to 5GB. YouTube is supported on a best-effort basis, but some videos may require fallback upload because of platform anti-bot protections.</div>
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <div class="step">
+    <div class="step-num">Troubleshooting</div>
+    <h3>Getting a 401 Unauthorized</h3>
+    <p>Your API key is missing, expired, or invalid. Check that your <code>Authorization: Bearer</code> header matches exactly — no extra spaces or newlines.</p>
+
+    <h3>Getting a 429 Rate Limited</h3>
+    <p>You've hit your plan's request-per-minute or concurrent-job limit. Upgrade your plan or wait before retrying.</p>
+
+    <h3>Transcription is slow</h3>
+    <p>Longer files take proportionally longer. A 30-minute file typically completes in 60–90 seconds. For real-time needs, consider our streaming mode (coming soon).</p>
+
+    <h3>Speaker labels are wrong</h3>
+    <p>Diarization identifies <em>number</em> of speakers, not their names. Named speakers require post-processing using the speaker labels with your own identification logic.</p>
+
+    <h3>File won't upload</h3>
+    <p>Check the file format is in the supported list above. Also check the file isn't corrupted — try playing it locally first.</p>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="step">
+    <div class="step-num">Need Help?</div>
+    <p>Email us anytime at <a href="mailto:hello@signalloomai.com">hello@signalloomai.com</a> — we respond within one business day.</p>
+    <p>For billing and subscription questions, your receipt and subscription details are available in the <a href="https://dashboard.stripe.com" target="_blank">Stripe Dashboard</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>

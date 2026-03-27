@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects
+# Signal Loom AI
+/api/* https://patches-deputy-awesome-ham.trycloudflare.com/api/:splat 200
+/v1/* https://patches-deputy-awesome-ham.trycloudflare.com/v1/:splat 200

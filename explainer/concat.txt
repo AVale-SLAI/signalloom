@@ -1,0 +1,5 @@
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/seg1.mp4'
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/seg2.mp4'
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/seg3.mp4'
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/seg4.mp4'
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/seg5.mp4'

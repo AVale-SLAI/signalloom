@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d0b16;
+    color: #e0ddf0;
+    width: 712px;
+    height: 430px;
+    padding: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    overflow: hidden;
+  }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #2e2b42; }
+  .logo { color: #a78bfa; font-weight: bold; font-size: 11px; letter-spacing: 1px; }
+  .badge { background: #0f2d1a; border: 1px solid #22c55e; border-radius: 4px; padding: 2px 8px; font-size: 10px; color: #86efac; }
+  .scroll { overflow: hidden; height: 355px; }
+  .json { color: #9d97bf; line-height: 1.7; }
+  .key { color: #c084fc; }
+  .string { color: #86efac; }
+  .number { color: #fb923c; }
+  .bool { color: #38bdf8; }
+  .null { color: #6b6280; }
+  .indent1 { padding-left: 16px; }
+  .indent2 { padding-left: 32px; }
+  .indent3 { padding-left: 48px; }
+  .tab { display: inline-block; width: 16px; }
+  .footer { margin-top: 10px; padding-top: 8px; border-top: 1px solid #2e2b42; font-size: 10px; color: #6b6280; display: flex; justify-content: space-between; }
+  .speaker-tag { display: inline-block; background: #1c1530; border: 1px solid #3d3a58; border-radius: 3px; padding: 0px 6px; font-size: 10px; color: #38bdf8; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <span class="logo">SIGNAL LOOM AI</span>
+    <span class="badge">✓ Structured JSON Output</span>
+  </div>
+
+  <div class="scroll">
+  <div class="json">
+<div class="indent1"><span class="key">"status"</span>: <span class="string">"success"</span>,</div>
+<div class="indent1"><span class="key">"id"</span>: <span class="string">"trn_01hx7kp2q4f8n0r9m3yd"</span>,</div>
+<div class="indent1"><span class="key">"duration_seconds"</span>: <span class="number">5023</span>,</div>
+<div class="indent1"><span class="key">"language"</span>: <span class="string">"en"</span>,</div>
+<div class="indent1"><span class="key">"speakers"</span>: [</div>
+<div class="indent2">{</div>
+<div class="indent3"><span class="key">"id"</span>: <span class="string">"spk_00"</span>,</div>
+<div class="indent3"><span class="key">"label"</span>: <span class="string">"SPEAKER_00"</span>,</div>
+<div class="indent3"><span class="key">"confidence"</span>: <span class="number">0.97</span>,</div>
+<div class="indent3"><span class="key">"turns"</span>: [<span class="number">0</span>, <span class="number">2</span>, <span class="number">4</span>]</div>
+<div class="indent2">},</div>
+<div class="indent2">{</div>
+<div class="indent3"><span class="key">"id"</span>: <span class="string">"spk_01"</span>,</div>
+<div class="indent3"><span class="key">"label"</span>: <span class="string">"SPEAKER_01"</span>,</div>
+<div class="indent3"><span class="key">"confidence"</span>: <span class="number">0.94</span>,</div>
+<div class="indent3"><span class="key">"turns"</span>: [<span class="number">1</span>, <span class="number">3</span>]</div>
+<div class="indent2">}</div>
+<div class="indent1">],</div>
+<div class="indent1"><span class="key">"transcript"</span>: [</div>
+<div class="indent2">{</div>
+<div class="indent3"><span class="key">"id"</span>: <span class="number">0</span>,</div>
+<div class="indent3"><span class="key">"speaker"</span>: <span class="string">"spk_00"</span>,</div>
+<div class="indent3"><span class="key">"start"</span>: <span class="number">29</span>, <span class="key">"end"</span>: <span class="number">64</span>,</div>
+<div class="indent3"><span class="key">"text"</span>: <span class="string">"Alright, let's get started. The goal for today's Q3 review..."</span></div>
+<div class="indent2">},</div>
+<div class="indent2">{</div>
+<div class="indent3"><span class="key">"id"</span>: <span class="number">1</span>,</div>
+<div class="indent3"><span class="key">"speaker"</span>: <span class="string">"spk_01"</span>,</div>
+<div class="indent3"><span class="key">"start"</span>: <span class="number">68</span>, <span class="key">"end"</span>: <span class="number">103</span>,</div>
+<div class="indent3"><span class="key">"text"</span>: <span class="string">"Sounds good. I also want to flag the latency regression..."</span></div>
+<div class="indent2">}</div>
+<div class="indent1">],</div>
+<div class="indent1"><span class="key">"topics"</span>: [</div>
+<div class="indent2">{ <span class="key">"label"</span>: <span class="string">"Q3 Platform Review"</span>, <span class="key">"confidence"</span>: <span class="number">0.91</span>, <span class="key">"span"</span>: [<span class="number">29</span>, <span class="number">64</span>] },</div>
+<div class="indent2">{ <span class="key">"label"</span>: <span class="string">"ML Infrastructure"</span>, <span class="key">"confidence"</span>: <span class="number">0.88</span>, <span class="key">"span"</span>: [<span class="number">142</span>, <span class="number">171</span>] }</div>
+<div class="indent1">],</div>
+<div class="indent1"><span class="key">"entities"</span>: [</div>
+<div class="indent2">{ <span class="key">"type"</span>: <span class="string">"PRODUCT"</span>, <span class="key">"text"</span>: <span class="string">"recommendation endpoint"</span>, <span class="key">"confidence"</span>: <span class="number">0.89</span> },</div>
+<div class="indent2">{ <span class="key">"type"</span>: <span class="string">"ORG"</span>, <span class="key">"text"</span>: <span class="string">"platform team"</span>, <span class="key">"confidence"</span>: <span class="number">0.85</span> }</div>
+<div class="indent1">],</div>
+<div class="indent1"><span class="key">"action_items"</span>: [</div>
+<div class="indent2">{</div>
+<div class="indent3"><span class="key">"speaker"</span>: <span class="string">"spk_01"</span>,</div>
+<div class="indent3"><span class="key">"text"</span>: <span class="string">"Share post-mortem Notion link"</span>,</div>
+<div class="indent3"><span class="key">"status"</span>: <span class="string">"open"</span></div>
+<div class="indent2">}</div>
+<div class="indent1">]</div>
+  </div>
+  </div>
+
+  <div class="footer">
+    <span>Signal Loom AI — Media In. Machine Intelligence Out.</span>
+    <span>signalloomai.com</span>
+  </div>
+</body>
+</html>

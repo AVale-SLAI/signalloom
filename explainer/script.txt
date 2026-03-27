@@ -1,0 +1,63 @@
+SIGNAL LOOM AI — EXPLAINER VIDEO SCRIPT
+======================================
+Duration target: ~60 seconds
+Voice: Samantha, rate 0.48 (slow, clear)
+
+---
+
+SLIDE 1 — THE PROBLEM (0:00–0:10)
+---
+Every AI system hits the same wall.
+
+When you feed raw transcript text into your AI — your agent, your RAG pipeline, your knowledge graph — you're giving it exactly what it doesn't need.
+
+Words. Not intelligence.
+
+No speaker context. No topic boundaries. No entity resolution. No timestamps. Just text.
+
+---
+
+SLIDE 2 — WHAT WE BUILT (0:10–0:22)
+---
+Signal Loom AI is a transcription pipeline built for how AI actually works.
+
+We take any audio or video file — podcast, conference call, medical grand rounds — and return structured, typed knowledge objects.
+
+Not a blob of text. Speakers labeled. Topics identified. Entities extracted. Timestamps on every segment.
+
+Ready to feed directly into your pipeline.
+
+---
+
+SLIDE 3 — CLOUD vs NATIVE (0:22–0:40)
+---
+Most transcription services run Whisper through an API. That means your audio travels to a third-party server. You're charged per minute. Latency adds up.
+
+Signal Loom runs Whisper locally — on Apple Silicon, using MLX. No API calls. No per-minute fees. No audio leaving your infrastructure.
+
+The speed difference is significant. A sixty-minute file processes in under three minutes.
+
+And because we run locally, we're not subject to API rate limits or cloud outages.
+
+---
+
+SLIDE 4 — WHAT YOU GET (0:40–0:54)
+---
+One upload. Four outputs in one pass.
+
+A clean text transcript. Timestamped segments. SRT and VTT caption files. And structured JSON — speakers, entities, topics, action items — typed and ready for your AI to consume directly.
+
+Everything in one pipeline. No post-processing required.
+
+---
+
+SLIDE 5 — CTA (0:54–1:02)
+---
+Signal Loom AI.
+
+Media in. Machine intelligence out.
+
+Get started free at signalloomai.com.
+
+---
+END

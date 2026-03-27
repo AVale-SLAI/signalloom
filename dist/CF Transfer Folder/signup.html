@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get Started Free — Signal Loom AI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0c0a14;
+    --surface: #16122a;
+    --card: #1e1833;
+    --card-hover: #251f42;
+    --border: #2e2660;
+    --accent: #8b5cf6;
+    --accent-dim: #6d44d4;
+    --accent-glow: rgba(139, 92, 246, 0.25);
+    --green: #34d399;
+    --text: #e2e0f0;
+    --text-dim: #8b87a8;
+    --text-muted: #5c5880;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 40px;
+  }
+
+  .logo img {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .tagline {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--green);
+    background: rgba(52, 211, 153, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    border-radius: 20px;
+    padding: 4px 10px;
+    margin-bottom: 24px;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--green);
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+
+  input[type="email"],
+  input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 13px 20px;
+    background: linear-gradient(135deg, var(--accent), #c084fc);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    margin-top: 8px;
+  }
+
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    margin-top: 12px;
+  }
+
+  .btn-secondary:hover { background: var(--surface); opacity: 1; }
+
+  .terms {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  .terms a { color: var(--accent); text-decoration: none; }
+  .terms a:hover { text-decoration: underline; }
+
+  /* Success state */
+  .success-state {
+    display: none;
+    text-align: center;
+  }
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(52, 211, 153, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+  }
+
+  .success-state h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .success-state p {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .key-display {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    word-break: break-all;
+    margin-bottom: 20px;
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .key-display:hover { border-color: var(--accent); }
+
+  .copy-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* Error */
+  .error-msg {
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #f87171;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  /* Loading spinner */
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Quick perks */
+  .perks {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .perk {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .perk-icon { font-size: 14px; }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-top: 16px;
+  }
+
+  .back-link:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Logo -->
+  <div class="logo">
+    <img src="logo.png" alt="Signal Loom" onerror="this.style.display='none'" />
+    <span class="logo-text">Signal Loom</span>
+  </div>
+
+  <div class="card">
+    <!-- Form state -->
+    <div id="form-state">
+      <div class="badge">100 mins/month · Your data helps us improve</div>
+      <h1>Start building free</h1>
+      <p class="tagline">We transcribe your media. You help us build better AI. Fair trade.</p>
+
+      <form id="signup-form" novalidate>
+        <div class="form-group">
+          <label for="email">Work email</label>
+          <input type="email" id="email" name="email" placeholder="you@yourcompany.com" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" placeholder="Alex Chen" autocomplete="name" required />
+        </div>
+        <div class="error-msg" id="error-msg"></div>
+        <button type="submit" class="btn" id="submit-btn">
+          Get my free API key
+        </button>
+      </form>
+
+      <p class="terms">
+        We use your email and anonymized usage data to improve Signal Loom.<br>
+        No selling your data. No spam. Unsubscribe anytime.<br>
+        By signing up you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.
+      </p>
+
+      <div class="divider">What you get</div>
+
+      <div class="perks">
+        <div class="perk"><span class="perk-icon">⚡</span> 100 min/month free</div>
+        <div class="perk"><span class="perk-icon">📊</span> Anonymized usage data</div>
+        <div class="perk"><span class="perk-icon">🔑</span> API key instantly</div>
+        <div class="perk"><span class="perk-icon">📡</span> Sync + async API</div>
+        <div class="perk"><span class="perk-icon">🧠</span> Structured JSON output</div>
+        <div class="perk"><span class="perk-icon">🌐</span> Any language</div>
+      </div>
+    </div>
+
+    <!-- Success state -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon">✓</div>
+      <h2>Your API key is ready</h2>
+      <p>Save this somewhere safe — you won't see it again.<br>Your key is shown below.</p>
+      <div class="key-display" id="key-display" title="Click to copy" onclick="copyKey()">
+        <span id="key-text"></span>
+      </div>
+      <p class="copy-hint">Click the key to copy it</p>
+      <button class="btn" onclick="window.location.href='/docs'">Read the docs →</button>
+      <button class="btn btn-secondary" onclick="window.location.href='/'">Back to home</button>
+    </div>
+  </div>
+
+  <a class="back-link" href="index.html">← Back to signalloomai.com</a>
+</div>
+
+<script>
+  const form = document.getElementById('signup-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorMsg = document.getElementById('error-msg');
+  const formState = document.getElementById('form-state');
+  const successState = document.getElementById('success-state');
+  const keyText = document.getElementById('key-text');
+
+  // API endpoint — update for local dev vs production
+  // Local dev:   const API_BASE = 'http://localhost:18790';
+  // Production:   const API_BASE = 'https://patches-deputy-awesome-ham.trycloudflare.com';
+  const API_BASE = 'https://patches-deputy-awesome-ham.trycloudflare.com';
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('show');
+  }
+
+  function hideError() {
+    errorMsg.classList.remove('show');
+  }
+
+  function setLoading(on) {
+    submitBtn.disabled = on;
+    submitBtn.innerHTML = on ? '<span class="spinner"></span>Generating your key...' : 'Get my free API key';
+  }
+
+  function showSuccess(apiKey) {
+    formState.style.display = 'none';
+    successState.style.display = 'block';
+    keyText.textContent = apiKey;
+    // Store key for copy
+    successState.dataset.key = apiKey;
+  }
+
+  function copyKey() {
+    const key = successState.dataset.key;
+    if (!key) return;
+    navigator.clipboard.writeText(key).then(() => {
+      const hint = document.querySelector('.copy-hint');
+      hint.textContent = '✓ Copied!';
+      setTimeout(() => { hint.textContent = 'Click the key to copy it'; }, 2000);
+    }).catch(() => {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = key;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      document.querySelector('.copy-hint').textContent = '✓ Copied!';
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+
+    const email = document.getElementById('email').value.trim();
+    const name = document.getElementById('name').value.trim();
+
+    if (!email || !email.includes('@')) {
+      showError('Please enter a valid email address.');
+      return;
+    }
+    if (!name || name.length < 2) {
+      showError('Please enter your name.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/v1/keys`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, plan: 'free' }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.detail || 'Something went wrong. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      // Success — show key
+      const apiKey = data.api_key || data.key || data.token;
+      if (apiKey) {
+        showSuccess(apiKey);
+      } else {
+        showError('Key generated but not returned. Please contact support.');
+        setLoading(false);
+      }
+
+    } catch (err) {
+      showError('Could not connect to the server. Please try again.');
+      setLoading(false);
+    }
+  });
+</script>
+</body>
+</html>

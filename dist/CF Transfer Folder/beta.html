@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Loom AI — Beta Program</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0e1a;
+    color: #e8edf5;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 52px; }
+  .logo-area { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 16px; }
+  .logo-placeholder {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2a5fa8, #1e3d6e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .logo-text { font-size: 24px; font-weight: 700; color: #fff; }
+  .logo-text span { color: #5b9cf6; }
+  .tagline { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #4a6a9a; margin-bottom: 14px; }
+  .hero-title { font-size: 34px; font-weight: 700; color: #fff; margin-bottom: 14px; letter-spacing: -0.5px; }
+  .hero-sub { font-size: 16px; color: #8899bb; line-height: 1.7; max-width: 540px; margin: 0 auto; }
+
+  /* Beta badge */
+  .beta-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #1a2a4a; border: 1px solid #2a4a7a;
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; color: #5b9cf6; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #5b9cf6;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Promise box */
+  .promise {
+    background: linear-gradient(135deg, #0d2040, #0f2847);
+    border: 1px solid #1a4080;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  .promise-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+  .promise-text { font-size: 14px; color: #a8c0e8; line-height: 1.7; }
+
+  /* Timeline */
+  .timeline-section { margin-bottom: 36px; }
+  .section-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #3a6aaa; margin-bottom: 18px; text-align: center; }
+
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+
+  .tl-row { display: flex; gap: 16px; align-items: flex-start; }
+  .tl-left { width: 120px; flex-shrink: 0; text-align: right; padding-top: 14px; }
+  .tl-period { font-size: 11px; font-weight: 700; color: #5b9cf6; }
+  .tl-dot-col { display: flex; flex-direction: column; align-items: center; width: 24px; flex-shrink: 0; }
+  .tl-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #1a2d4a; border: 2px solid #2a4a7a;
+    margin-top: 16px; flex-shrink: 0;
+  }
+  .tl-dot.live { background: #5b9cf6; border-color: #5b9cf6; box-shadow: 0 0 10px rgba(91,156,246,0.4); }
+  .tl-dot.soon { background: #2a4a7a; border-color: #5b9cf6; }
+  .tl-line { width: 2px; flex: 1; min-height: 20px; background: #1e2d4a; margin: 4px 0; }
+  .tl-right { flex: 1; padding-bottom: 8px; }
+  .tl-card {
+    background: #0f1a2e; border: 1px solid #1e2d4a;
+    border-radius: 12px; padding: 14px 18px;
+  }
+  .tl-card.live { border-color: #1a3a6e; background: #0a1a30; }
+  .tl-stage { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #3a6aaa; margin-bottom: 4px; }
+  .tl-stage.active { color: #5b9cf6; }
+  .tl-name { font-size: 14px; font-weight: 600; color: #e8edf5; margin-bottom: 6px; }
+  .tl-desc { font-size: 12px; color: #6a8aaa; line-height: 1.5; }
+  .tl-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tl-tag {
+    background: #0a1a30; border: 1px solid #1a2d4a;
+    border-radius: 5px; padding: 2px 8px;
+    font-size: 9px; color: #5b9cf6;
+  }
+
+  /* What you get today */
+  .today-box {
+    background: #0a1a30; border: 1px solid #1a3a6e;
+    border-radius: 16px; padding: 24px 28px;
+    margin-bottom: 32px;
+  }
+  .today-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .today-dot { width: 8px; height: 8px; border-radius: 50%; background: #4aba7a; }
+  .today-title { font-size: 13px; font-weight: 700; color: #fff; }
+  .today-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .today-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #a8c0e0; }
+  .today-check { color: #4aba7a; font-size: 14px; }
+
+  /* CTA */
+  .cta-section { text-align: center; margin-bottom: 40px; }
+  .cta-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .cta-sub { font-size: 14px; color: #7a8aaa; margin-bottom: 20px; line-height: 1.6; }
+  .cta-form { display: flex; gap: 10px; max-width: 420px; margin: 0 auto; }
+  .cta-input {
+    flex: 1; background: #0a1220; border: 1px solid #1e2d4a;
+    border-radius: 10px; padding: 11px 16px;
+    font-size: 14px; color: #e8edf5; outline: none;
+  }
+  .cta-input::placeholder { color: #4a6a9a; }
+  .cta-input:focus { border-color: #3a6aaa; }
+  .cta-btn {
+    background: #2a5fa8; border: 1px solid #3a6aaa;
+    border-radius: 10px; padding: 11px 20px;
+    font-size: 13px; font-weight: 600; color: #fff;
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .cta-btn:hover { background: #3a70bf; }
+
+  /* Promise footer */
+  .promise-footer {
+    text-align: center;
+    background: linear-gradient(135deg, #0d1f3c 0%, #0a1428 100%);
+    border: 1px solid #1e3060;
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .promise-footer-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .promise-footer-text { font-size: 13px; color: #8899bb; line-height: 1.7; }
+  .promise-footer-text strong { color: #5b9cf6; }
+
+  /* Footer */
+  .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #1a2540; font-size: 11px; color: #3a4f6a; }
+
+  @media (max-width: 600px) {
+    .today-list { grid-template-columns: 1fr; }
+    .cta-form { flex-direction: column; }
+    .tl-left { width: 80px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-area">
+      <div class="logo-placeholder">SL</div>
+      <div class="logo-text">Signal Loom <span>AI</span></div>
+    </div>
+    <div class="tagline">Media In · Machine Intelligence Out</div>
+    <div class="beta-badge"><div class="pulse"></div> Private Beta — Live</div>
+    <h1 class="hero-title">Help Us Build the Future<br>of Audio Intelligence</h1>
+    <p class="hero-sub">We're building something that doesn't exist yet — a platform that turns your audio and video into structured, machine-readable intelligence. Not just transcripts. Not just summaries. Something new. We want you to help us shape it.</p>
+  </div>
+
+  <!-- What we promise -->
+  <div class="promise">
+    <div class="promise-title">Here's our promise to every beta customer:</div>
+    <p class="promise-text">Join now, and you're not just getting early access — you're getting a voice in what we build, how we build it, and what it costs. The earliest users will be treated like partners, not beta testers. We'll do right by the people who believe in this first.</p>
+  </div>
+
+  <!-- What works today -->
+  <div class="section-label">What Works Today</div>
+  <div class="today-box">
+    <div class="today-header">
+      <div class="today-dot"></div>
+      <div class="today-title">Signal Loom is live — and actually useful right now</div>
+    </div>
+    <div class="today-list">
+      <div class="today-item"><span class="today-check">✓</span> Whisper transcription — runs on our hardware</div>
+      <div class="today-item"><span class="today-check">✓</span> Word-level timestamps on every word</div>
+      <div class="today-item"><span class="today-check">✓</span> Structured JSON output</div>
+      <div class="today-item"><span class="today-check">✓</span> SRT + VTT subtitle formats</div>
+      <div class="today-item"><span class="today-check">✓</span> No data leaves your infrastructure</div>
+      <div class="today-item"><span class="today-check">✓</span> No per-minute API costs</div>
+      <div class="today-item"><span class="today-check">✓</span> Python SDK for developers</div>
+      <div class="today-item"><span class="today-check">✓</span> API access + usage tracking</div>
+    </div>
+  </div>
+
+  <!-- Roadmap timeline -->
+  <div class="section-label">What's Coming — and When</div>
+  <div class="timeline">
+
+    <!-- Live -->
+    <div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-period">NOW</div>
+      </div>
+      <div class="tl-dot-col">
+        <div class="tl-dot live"></div>
+        <div class="tl-line" style="background:#4aba7a;"></div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card live">
+          <div class="tl-stage active">Stage 1 — LIVE</div>
+          <div class="tl-name">Transcription + Timestamps</div>
+          <div class="tl-desc">MLX Whisper running natively on Apple Silicon. Structured JSON, SRT, VTT output. No cloud. No per-minute costs.</div>
+          <div class="tl-tags">
+            <div class="tl-tag">✅ Live today</div>
+            <div class="tl-tag">Available now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Week 1-2 -->
+    <div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-period">Week 1–2</div>
+      </div>
+      <div class="tl-dot-col">
+        <div class="tl-dot soon"></div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-stage">Stage 2 — Sprint 1</div>
+          <div class="tl-name">Speaker Attribution</div>
+          <div class="tl-desc">Know who said what, when. Automatic speaker labeling across multi-person recordings — meetings, calls, panels.</div>
+          <div class="tl-tags">
+            <div class="tl-tag">Coming next</div>
+            <div class="tl-tag">Sprint 1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Week 2-3 -->
+    <div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-period">Week 2–3</div>
+      </div>
+      <div class="tl-dot-col">
+        <div class="tl-dot soon"></div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-stage">Stage 3 — Sprint 1</div>
+          <div class="tl-name">Entity Extraction</div>
+          <div class="tl-desc">Automatic identification of people, companies, products, and locations mentioned in your audio. Every name pulled out and tagged.</div>
+          <div class="tl-tags">
+            <div class="tl-tag">Early sprint</div>
+            <div class="tl-tag">High value</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Week 3-4 -->
+    <div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-period">Week 3–4</div>
+      </div>
+      <div class="tl-dot-col">
+        <div class="tl-dot soon"></div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-stage">Stage 4 — Sprint 2</div>
+          <div class="tl-name">Topic Mapping</div>
+          <div class="tl-desc">Automatically segment recordings by topic — earnings overview, Q&A, guidance discussion, risk factors. Making audio navigable by theme.</div>
+          <div class="tl-tags">
+            <div class="tl-tag">Sprint 2</div>
+            <div class="tl-tag">Navigation layer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Week 4-5 -->
+    <div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-period">Week 4–5</div>
+      </div>
+      <div class="tl-dot-col">
+        <div class="tl-dot soon"></div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-stage">Stage 5 — Sprint 2</div>
+          <div class="tl-name">Action Intelligence</div>
+          <div class="tl-desc">Automatic detection of commitments, decisions, and tasks from meetings and calls. What was promised, what was decided, what comes next.</div>
+          <div class="tl-tags">
+            <div class="tl-tag">Sprint 2</div>
+            <div class="tl-tag">High differentiation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Week 5-6 -->
+    <div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-period">Week 5–6</div>
+      </div>
+      <div class="tl-dot-col">
+        <div class="tl-dot soon"></div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-stage">Stage 6 — Sprint 3</div>
+          <div class="tl-name">Structured Summaries</div>
+          <div class="tl-desc">Per-segment summaries generated from source content — not hallucinations. Every summary cited back to its timestamp and speaker.</div>
+          <div class="tl-tags">
+            <div class="tl-tag">Sprint 3</div>
+            <div class="tl-tag">Citation-bound</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Week 6-8 -->
+    <div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-period">Week 6–8</div>
+      </div>
+      <div class="tl-dot-col">
+        <div class="tl-dot soon"></div>
+      </div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-stage">Stage 7 — Sprint 3</div>
+          <div class="tl-name">Semantic Search + Agent Interface</div>
+          <div class="tl-desc">Ask any question across all your audio — in plain language. "What changed in guidance tone across the last 4 quarters?" Get timestamped, cited answers. Not just a transcript. A knowledge base.</div>
+          <div class="tl-tags">
+            <div class="tl-tag">Sprint 3</div>
+            <div class="tl-tag">Flagship feature</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-title">Join the Beta</div>
+    <p class="cta-sub">Get early access, shape what we build, and lock in founder-tier pricing for as long as you're with us.</p>
+    <form class="cta-form" onsubmit="return false;">
+      <input class="cta-input" type="email" placeholder="your@email.com" />
+      <button class="cta-btn">Request Access</button>
+    </form>
+    <p style="font-size:12px;color:#4a6a9a;margin-top:12px;">No spam. No pitch decks. Just access and influence.</p>
+  </div>
+
+  <!-- Bottom promise -->
+  <div class="promise-footer">
+    <div class="promise-footer-title">A promise to our first 100 beta users:</div>
+    <p class="promise-footer-text">
+      The people who join us in the first 100 will define what this product becomes. <strong>For three years, we'll guarantee you founder-tier pricing</strong> — no matter how big this gets. You'll have a direct line to the team, a voice in every roadmap decision, and we'll move heaven and earth to make sure the people who believed in us first are treated better than anyone else.<br><br>
+      This is a long project. We're building something that matters. We'd rather build it with people who care than sell to people who don't.
+    </p>
+  </div>
+
+  <div class="footer">
+    Signal Loom AI &nbsp;·&nbsp; signalloomai.com &nbsp;·&nbsp; © 2026 &nbsp;·&nbsp; <span style="color:#5b9cf6;">hello@signalloomai.com</span>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/full1_sandy.mp4'
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/full2_sandy.mp4'
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/full3_sandy.mp4'
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/full4_sandy.mp4'
+file '/Users/aehs-mini-ctrl/.openclaw/workspace/signal-loom-landing/explainer/full5_sandy.mp4'
