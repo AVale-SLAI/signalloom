@@ -119,11 +119,12 @@
     };
 
     const info = TIERS[tier] || TIERS.starter;
+    const API_BASE = "https://api.signalloomai.com";
 
     async function createCheckout() {
       try {
         // Call our API to create a Stripe Checkout session
-        const resp = await fetch('https://recording-unnecessary-burke-advise.trycloudflare.com/v1/stripe/checkout', {
+        const resp = await fetch(`${API_BASE}/v1/stripe/checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({

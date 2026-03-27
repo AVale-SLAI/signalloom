@@ -407,7 +407,9 @@
   const keyText = document.getElementById('key-text');
 
   // API endpoint — prefer explicit runtime configuration, otherwise same-origin.
-  const API_BASE = window.SIGNAL_LOOM_API_BASE || window.location.origin;
+  // Production API endpoint — no tunnel, no origin fallback
+  window.SIGNAL_LOOM_API_BASE = "https://api.signalloomai.com";
+  const API_BASE = window.SIGNAL_LOOM_API_BASE;
 
   function showError(msg) {
     errorMsg.textContent = msg;

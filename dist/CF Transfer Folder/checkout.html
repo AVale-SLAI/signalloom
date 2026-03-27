@@ -123,7 +123,7 @@
     async function createCheckout() {
       try {
         // Call our API to create a Stripe Checkout session
-        const resp = await fetch('https://patches-deputy-awesome-ham.trycloudflare.com/v1/stripe/checkout', {
+        const resp = await fetch('https://api.signalloomai.com/v1/stripe/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({

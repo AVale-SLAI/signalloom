@@ -1,4 +1,5 @@
 # Cloudflare Pages redirects
 # Signal Loom AI
-/api/* https://patches-deputy-awesome-ham.trycloudflare.com/api/:splat 200
-/v1/* https://patches-deputy-awesome-ham.trycloudflare.com/v1/:splat 200
+# API calls route to production API (not tunnel)
+/api/* https://api.signalloomai.com/api/:splat 200
+/v1/* https://api.signalloomai.com/v1/:splat 200
