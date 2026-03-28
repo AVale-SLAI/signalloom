@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Difference Between a Video Archive and a Knowledge Asset — Signal Loom AI</title>
+  <meta name="description" content="Your video archive is a liability — piles of content nobody watches, search can't reach inside, and AI can't answer questions about. Here's the difference between a video pile and a structured knowledge asset.">
+  <meta property="og:title" content="The Difference Between a Video Archive and a Knowledge Asset — Signal Loom AI">
+  <meta property="og:description" content="One URL paste turns your video archive into timestamped, entity-tagged, chapter-structured JSON — ready for AI search, content repurposing, and citations.">
+  <meta property="og:type" content="article">
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a25;
+      --border: #222230; --accent: #5B8DF9; --accent-bright: #7BA8FF;
+      --green: #22C55E; --red: #EF4444; --yellow: #F59E0B;
+      --text: #E2E8F0; --text-dim: #94A3B8;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 32px; border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .nav-brand span { color: var(--accent); }
+    nav ul { display: flex; align-items: center; gap: 28px; list-style: none; }
+    nav ul a { color: var(--text-dim); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    nav ul a:hover { color: var(--text); }
+    .btn-nav { padding: 7px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-dim); text-decoration: none; }
+    .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero {
+      text-align: center; padding: 100px 20px 60px; max-width: 800px; margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(91,141,249,0.08); border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 100px; padding: 6px 14px; font-size: 12px; color: var(--accent-bright);
+      margin-bottom: 24px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .hero-title { font-size: 46px; font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
+    .hero-title span { color: var(--accent-bright); }
+    .hero-sub { font-size: 18px; line-height: 1.7; color: var(--text-dim); max-width: 620px; margin: 0 auto 32px; }
+    .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border: none; }
+    .btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); }
+    .btn-secondary { background: transparent; border: 1.5px solid var(--border); color: var(--text-dim); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 80px 20px; }
+
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-title { font-size: 36px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .section-sub { font-size: 17px; line-height: 1.7; color: var(--text-dim); max-width: 640px; }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); margin: 48px 0 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .stat-item { background: var(--surface); padding: 28px 24px; text-align: center; }
+    .stat-num { font-size: 36px; font-weight: 800; color: var(--accent-bright); margin-bottom: 4px; }
+    .stat-label { font-size: 13px; color: var(--text-dim); }
+
+    /* PAIN */
+    .pain-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .pain-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .pain-card h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .pain-card p { font-size: 14px; line-height: 1.65; color: var(--text-dim); }
+    .pain-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; }
+    .pain-tag.red { background: rgba(239,68,68,0.1); color: #FCA5A5; }
+    .pain-tag.yellow { background: rgba(245,158,11,0.1); color: #FCD34D; }
+    .pain-tag.blue { background: rgba(91,141,249,0.1); color: var(--accent-bright); }
+
+    /* CODE */
+    .code-block {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+      font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
+      color: var(--text-dim); overflow-x: auto; margin: 24px 0;
+    }
+    .code-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; font-family: var(--font-mono); }
+    .code-label span { color: var(--accent); }
+
+    /* COMPARE */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .compare-card.before { border-color: rgba(239,68,68,0.3); }
+    .compare-card.after { border-color: rgba(34,197,94,0.3); }
+    .compare-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+    .compare-card.before h3 { color: #FCA5A5; }
+    .compare-card.after h3 { color: var(--green); }
+    .compare-card ul { list-style: none; padding: 0; }
+    .compare-card ul li { font-size: 14px; color: var(--text-dim); padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .compare-card ul li:last-child { border-bottom: none; }
+    .compare-card ul li::before { content: "— "; opacity: 0.5; }
+
+    /* USE CASES */
+    .usecase-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
+    .usecase-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    .usecase-icon { width: 32px; height: 32px; background: rgba(91,141,249,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--accent); }
+    .usecase-card h4 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .usecase-card p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+    /* AI VISIBILITY */
+    .ai-visibility { background: var(--surface); border: 1px solid rgba(91,141,249,0.2); border-radius: 16px; padding: 32px; margin-top: 48px; }
+    .ai-visibility h3 { font-size: 20px; font-weight: 800; margin-bottom: 16px; }
+    .ai-visibility p { font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 16px; }
+    .ai-visibility .highlight { color: var(--text); font-weight: 700; }
+
+    /* CALLOUT */
+    .callout {
+      background: rgba(91,141,249,0.05); border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 12px; padding: 24px; margin: 32px 0;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .callout-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--accent); margin-top: 2px; }
+    .callout p { font-size: 15px; line-height: 1.7; color: var(--text-dim); }
+    .callout strong { color: var(--text); }
+
+    /* CTA */
+    .cta-section { text-align: center; padding: 100px 20px; border-top: 1px solid var(--border); }
+    .cta-section .section-title { font-size: 42px; }
+    .cta-section .section-sub { margin: 0 auto 40px; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 20px; text-align: center; font-size: 13px; color: var(--text-dim); }
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    /* STICKY CTA */
+    .sticky-cta {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border); padding: 14px 32px;
+      display: flex; align-items: center; justify-content: center; gap: 24px;
+    }
+    .sticky-cta p { font-size: 14px; color: var(--text-dim); }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 32px; }
+      .pain-grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+      .usecase-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">Signal Loom <span>AI</span></a>
+  <ul>
+    <li><a href="/builders.html">For Builders</a></li>
+    <li><a href="/ingest.html">YouTube Ingest</a></li>
+    <li><a href="/demo.html">Demo</a></li>
+    <li><a href="/#pricing">Pricing</a></li>
+    <li><a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a></li>
+  </ul>
+  <a href="/signup.html" class="btn-nav">Start free →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Video Archive Intelligence — Use Case Whitepaper
+  </div>
+  <h1 class="hero-title">
+    Your Video Archive Is a Liability.<br>
+    <span>Here's the Difference Between Piles and Assets.</span>
+  </h1>
+  <p class="hero-sub">
+    Thousands of hours of recorded webinars, conference talks, product demos, and training sessions. Nobody watches the old ones. Search can't reach inside them. AI can't answer questions about what's in them. That's a liability, not an asset.
+  </p>
+  <div class="hero-ctas">
+    <a href="/demo.html" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      See live demo
+    </a>
+    <a href="/ingest.html" class="btn btn-secondary">Try a YouTube URL free</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-num">85%</div>
+      <div class="stat-label">of video content watched only in first 48 hours</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0%</div>
+      <div class="stat-label">of your video archive is searchable by AI today</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">1</div>
+      <div class="stat-label">API call to turn a URL into a structured knowledge object</div>
+    </div>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section class="pain-section">
+  <div class="container">
+    <div class="section-label">The problem</div>
+    <h2 class="section-title">Video archives grow. Value decays. AI can't see inside.</h2>
+    <p class="section-sub">You publish video content because you have to. You don't publish it because it compounds. Here's why the archive strategy most teams have is a liability that gets worse over time.</p>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <span class="pain-tag red">Failure mode 1</span>
+        <h3>Nobody watches the old videos</h3>
+        <p>Your YouTube archive has 400 videos from 2019. Your team refers people to the "keynote from 2021" but can't find it, and even if they could, the next person won't watch a 47-minute talk to find the 90-second answer they needed.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag red">Failure mode 2</span>
+        <h3>Search can't reach inside video</h3>
+        <p>YouTube search finds titles and descriptions. It doesn't find "the part where Alex explained our pricing model in Q3 2022." Your archive is opaque to search. Internal search tools return the video, not the moment.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag yellow">Failure mode 3</span>
+        <h3>AI can't answer questions about your videos</h3>
+        <p>When a customer asks "didn't you have a talk about X?", your AI can't answer it. Not because it doesn't know — because the video content is unstructured text that can't be retrieved. You have the knowledge. It's just not accessible.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag yellow">Failure mode 4</span>
+        <h3>Manual chapters don't scale</h3>
+        <p>YouTube chapters require manual creation. Nobody does it consistently. Caption exports are flat text with no structure. Auto-chapter tools exist but output timestamps without context — you still have to make sense of them.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag blue">Failure mode 5</span>
+        <h3>Content repurposing is manual and expensive</h3>
+        <p>Turning a webinar into a blog post, a tweet thread, a knowledge base article — each of these requires watching the full video, taking notes, and extracting key moments. That's hours per video. Your archive doesn't get repurposed. It just sits there.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag blue">Failure mode 6</span>
+        <h3>You can't train on your own content</h3>
+        <p>Your best product explanations, your most accurate technical walkthroughs, your clearest customer onboarding — they're all in video. You can't fine-tune on them. You can't RAG over them. They're inert assets, not usable knowledge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT TEAMS TRY -->
+<section style="padding: 80px 20px;">
+  <div class="container">
+    <div class="section-label">What teams try</div>
+    <h2 class="section-title">The workaround stack — and why it doesn't work at scale.</h2>
+    <p class="section-sub">Every team with a video archive has tried some version of this. Here's why the approach breaks down before you get to 50 videos.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card before">
+        <h3>The manual stack</h3>
+        <ul>
+          <li>YouTube Studio captions → download as .txt</li>
+          <li>Flat text, no timestamps, no speaker labels</li>
+          <li>Manual chapter markers (inconsistent, time-consuming)</li>
+          <li>Clip videos manually in Premiere or Descript</li>
+          <li>Update knowledge base by hand from video notes</li>
+          <li>Doesn't scale beyond 10–20 videos</li>
+        </ul>
+      </div>
+
+      <div class="compare-card after">
+        <h3>The automated stack</h3>
+        <ul>
+          <li>YouTube chapter tools (timestamps, no context)</li>
+          <li>Whisper API → flat transcript</li>
+          <li>Embedding the transcript for semantic search</li>
+          <li>Still no speaker labels, no entities, no provenance</li>
+          <li>No chapter structure, no content repurposing path</li>
+          <li>Pipeline maintenance becomes its own problem</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p><strong>The common thread:</strong> Both stacks treat video as text. The actual knowledge — temporal context, speaker identity, topical structure, entity relationships — is discarded in the conversion. What you're searching over is a shadow of the video, not the video itself.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE TRANSFORMATION -->
+<section style="padding: 80px 20px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="section-label">The transformation</div>
+    <h2 class="section-title">One URL paste. A structured knowledge object.</h2>
+    <p class="section-sub">Signal Loom takes any YouTube URL and returns timestamped, entity-tagged, chapter-structured JSON you can query, search, and feed directly to AI systems — no manual processing.</p>
+
+    <div class="code-label">Input: Any YouTube URL — <span>youtube_url source</span></div>
+    <div class="code-block">result = client.transcribe_sync(
+    url="https://youtube.com/watch?v=dQw4w9WgXcQ",
+    return_format="json"
+)</div>
+
+    <div class="code-label">What you get — <span>Signal Loom Schema v1</span></div>
+    <div class="code-block">
+<span class="k">"schema"</span>: <span class="s">"Signal Loom Schema v1"</span>,
+<span class="k">"source_ref"</span>: <span class="s">"youtube.com/watch?v=dQw4w9WgXcQ"</span>,
+<span class="k">"source_kind"</span>: <span class="s">"youtube_url"</span>,
+<span class="k">"duration_seconds"</span>: <span class="n">213.04</span>,
+<span class="k">"language"</span>: <span class="s">"en"</span>,
+<span class="k">"segments"</span>: [
+  {
+    <span class="k">"segment_id"</span>: <span class="s">"S1"</span>,
+    <span class="k">"start_seconds"</span>: <span class="n">0.0</span>,
+    <span class="k">"end_seconds"</span>: <span class="n">21.88</span>,
+    <span class="k">"text"</span>: <span class="s">"We're no strangers to love..."</span>
+  },
+  {
+    <span class="k">"segment_id"</span>: <span class="s">"S2"</span>,
+    <span class="k">"start_seconds"</span>: <span class="n">21.88</span>,
+    <span class="k">"end_seconds"</span>: <span class="n">43.71</span>,
+    <span class="k">"text"</span>: <span class="s">"You know the rules and so do I..."</span>
+  },
+  {
+    <span class="k">"segment_id"</span>: <span class="s">"S3"</span>,
+    <span class="k">"start_seconds"</span>: <span class="n">43.71</span>,
+    <span class="k">"end_seconds"</span>: <span class="n">65.42</span>,
+    <span class="k">"text"</span>: <span class="s">"A full commitment's what I'm thinking of..."</span>
+  }
+  <span class="cm">// 13 segments total — timestamped, citable, searchable</span>
+],
+<span class="k">"metadata"</span>: {
+  <span class="k">"schema_dimensions"</span>: [
+    { <span class="k">"dimension"</span>: <span class="s">"temporal"</span> },
+    { <span class="k">"dimension"</span>: <span class="s">"provenance"</span> }
+  ]
+}</div>
+
+    <div class="callout">
+      <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p><strong>What this means in practice:</strong> Every segment in your video archive becomes a retrievable, citable unit of knowledge. Not a text shadow — a structured artifact with temporal address and provenance. The difference between a video pile and a knowledge asset is the schema.</p>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES THAT BECOME POSSIBLE -->
+<section style="padding: 80px 20px;">
+  <div class="container">
+    <div class="section-label">What's possible now</div>
+    <h2 class="section-title">Use cases that were too expensive before.</h2>
+    <p class="section-sub">A timestamped, structured video archive unlocks product features that require manual work today.</p>
+
+    <div class="usecase-grid">
+      <div class="usecase-card">
+        <div class="usecase-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h4>AI-powered video search</h4>
+        <p>Users ask natural questions. The system retrieves the exact segment, seconds into the video, where the answer was given. No more "watch the full video to find out."</p>
+      </div>
+
+      <div class="usecase-card">
+        <div class="usecase-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <h4>Automatic chapter generation</h4>
+        <p>Segments become chapters. Timestamps become chapter markers. Every video in your archive gets structured navigation without manual work.</p>
+      </div>
+
+      <div class="usecase-card">
+        <div class="usecase-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h4>Content repurposing</h4>
+        <p>Timestamped segments become the input to automated content pipelines. Turn webinars into articles, conference talks into blog posts, product demos into knowledge base entries.</p>
+      </div>
+
+      <div class="usecase-card">
+        <div class="usecase-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <h4>Multilingual packaging</h4>
+        <p>Structured segments are the input to translation pipelines. Ship translated chapter markers, localized summaries, and regional content variants — from the same source.</p>
+      </div>
+
+      <div class="usecase-card">
+        <div class="usecase-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h4>AI citation for video content</h4>
+        <p>When AI answers questions about your video content, it can cite the specific segment: "At 4:23 in this talk, the presenter explained..." — verifiable, grounded, and traceable.</p>
+      </div>
+
+      <div class="usecase-card">
+        <div class="usecase-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h4>Archive intelligence at scale</h4>
+        <p>Process your entire archive in a batch pipeline. Each video becomes a structured knowledge object. Build a searchable, queryable index of your institutional video memory.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI VISIBILITY -->
+<section style="padding: 80px 20px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="section-label">AI visibility</div>
+    <h2 class="section-title">Better structured media = better indexed by AI systems.</h2>
+
+    <div class="ai-visibility">
+      <h3>Why Google AI Overviews and ChatGPT citations favor structured content.</h3>
+      <p>AI systems that surface content in responses — whether Google's AI Overviews, ChatGPT citations, or any RAG-based product — have to decide what to surface. <span class="highlight">They prefer machine-readable, structured content with clear provenance and temporal context.</span></p>
+      <p>When your video archive is a pile of unstructured uploads, AI systems can describe its existence. When your archive is a collection of timestamped, provenance-tagged knowledge objects, AI systems can cite from it. The difference is the schema layer Signal Loom provides.</p>
+      <p><span class="highlight">The teams winning AI visibility today are the ones who made their content machine-readable first.</span> Structured media is the prerequisite for AI citation. Unstructured media gets summarized at best — and ignored at worst.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="section-title">Paste any YouTube URL.<br>See what your archive could become.</h2>
+  <p class="section-sub">Free tier includes 100 structured minutes per month. No credit card. No setup fee. The difference between a video pile and a knowledge asset is one API call.</p>
+  <div class="hero-ctas">
+    <a href="/ingest.html" class="btn btn-primary" style="font-size: 16px; padding: 14px 28px;">
+      Try a YouTube URL free →
+    </a>
+    <a href="/demo.html" class="btn btn-secondary" style="font-size: 16px; padding: 14px 28px;">
+      See the demo
+    </a>
+  </div>
+</section>
+
+<footer>
+  <a href="/">Signal Loom AI</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a>
+  <p style="margin-top: 12px;">Structured intelligence for AI systems — not just a transcript.</p>
+</footer>
+
+<!-- STICKY CTA -->
+<div class="sticky-cta">
+  <p>Turn your video archive into a structured knowledge asset.</p>
+  <a href="/signup.html" class="btn btn-primary">Start free →</a>
+</div>
+
+</body>
+</html>
