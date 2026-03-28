@@ -728,7 +728,20 @@
       <li><a href="#who">For teams</a></li>
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="#getting-started">Docs</a></li>
-      <li><a href="/ingest.html">YouTube</a></li>
+      <li>
+        <select id="lang-picker" style="background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); font-size: 13px; padding: 5px 8px; cursor: pointer; outline: none;">
+          <option value="en">🌐 EN</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="ja">🇯🇵 日本語</option>
+          <option value="ko">🇰🇷 한국어</option>
+          <option value="pt">🇧🇷 Português</option>
+          <option value="hi">🇮🇳 हिन्दी</option>
+          <option value="ar">🇸🇦 العربية</option>
+        </select>
+      </li>
       <li><a href="https://github.com/signalloom/signalloom" class="btn-nav" target="_blank">GitHub</a></li>
     </ul>
   </div>
@@ -747,8 +760,9 @@
     Signal Loom ingests audio, video, URLs, and live streams and returns provenance-rich knowledge objects your AI systems can search, cite, and act on.
   </p>
   <p class="hero-sub animate-fade-up delay-2" style="font-size: 15px; color: var(--text-muted); margin-top: -20px; font-style: italic; max-width: 540px; margin-left: auto; margin-right: auto;">
-    AI systems are not limited by reasoning anymore - they are limited by what they can structurally understand.
+    AI systems are not limited by reasoning anymore — they are limited by what they can structurally understand.
   </p>
+  <p id="lang-tagline" class="hero-sub animate-fade-up delay-2" style="font-size: 14px; color: var(--accent-bright); margin-top: -12px; display: none;"></p>
   <div class="hero-ctas animate-fade-up delay-3">
     <a href="#getting-started" class="btn btn-primary">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -774,7 +788,7 @@
       </div>
       <div style="margin-top:12px"><span class="t-prompt">$</span> <span class="t-cmd">curl -X POST https://api.signalloomai.com/v1/transcribe \<br>  -H "Authorization: Bearer $SL_API_KEY" \<br>  -F "url=https://youtube.com/watch?v=..."</span></div>
       <div class="terminal-output">
-        <span class="t-success">✓</span> <span class="t-string">"status": "queued"</span> — job submitted — poll <span class="t-num">/v1/status/{id}</span>
+        <span class="t-success">✓</span> <span class="t-string">"status": "queued"</span> - job submitted - poll <span class="t-num">/v1/status/{id}</span>
       </div>
     </div>
   </div>
@@ -812,7 +826,7 @@
   <div class="container">
     <div class="section-label">What it does</div>
     <h2 class="section-title reveal">Most media pipelines stop at text.<br>Signal Loom goes further.</h2>
-    <p class="section-sub reveal">Signal Loom creates structure: timestamps, speaker turns, topics, entities, actions, summaries, and machine-readable outputs — not just a transcript.</p>
+    <p class="section-sub reveal">Signal Loom creates structure: timestamps, speaker turns, topics, entities, actions, summaries, and machine-readable outputs - not just a transcript.</p>
 
     <div class="flow-diagram reveal">
       <div class="flow-box">
@@ -849,11 +863,11 @@
             <polyline points="8 6 2 12 8 18"/>
           </svg>
         </div>
-        <p style="font-size:14px; color: var(--text-secondary);">Signal Loom Schema — timestamps, speakers, topics, entities, actions, summaries.</p>
+        <p style="font-size:14px; color: var(--text-secondary);">Signal Loom Schema - timestamps, speakers, topics, entities, actions, summaries.</p>
       </div>
     </div>
 
-    <div class="output-label reveal">Example API response — Signal Loom Schema</div>
+    <div class="output-label reveal">Example API response - Signal Loom Schema</div>
     <div class="json-output reveal" id="json-output">
       <span class="copy-badge" onclick="copyJson()">Copy</span>
       <pre id="json-pre"></pre>
@@ -866,18 +880,18 @@
   <div class="container">
     <div class="section-label">Built for teams turning media into action</div>
     <h2 class="section-title reveal">The structural understanding layer for AI.</h2>
-    <p class="section-sub reveal">Signal Loom is the layer between raw media and machine-readable intelligence — built for the people building what's next.</p>
+    <p class="section-sub reveal">Signal Loom is the layer between raw media and machine-readable intelligence - built for the people building what's next.</p>
 
     <div class="who-grid">
       <div class="who-card reveal">
         <h3>For developers</h3>
-        <p>Add structured media intelligence to your products. One API call returns a schema-defined knowledge object your agent, RAG pipeline, or workflow can actually use — not raw text to post-process.</p>
+        <p>Add structured media intelligence to your products. One API call returns a schema-defined knowledge object your agent, RAG pipeline, or workflow can actually use - not raw text to post-process.</p>
         <span class="who-tag">AI agents &amp; developer tools</span>
       </div>
 
       <div class="who-card reveal">
         <h3>For platforms &amp; publishers</h3>
-        <p>Turn archives and livestreams into reusable intelligence. Video libraries, podcast feeds, lecture recordings — all become queryable, citable, durable knowledge assets.</p>
+        <p>Turn archives and livestreams into reusable intelligence. Video libraries, podcast feeds, lecture recordings - all become queryable, citable, durable knowledge assets.</p>
         <span class="who-tag">Content intelligence</span>
       </div>
 
@@ -905,7 +919,7 @@
           </div>
           <span style="font-size:15px; font-weight:600;">YouTube → Signal Loom Schema</span>
         </div>
-        <p style="font-size:14px; color: var(--text-secondary); line-height:1.65; margin-bottom:16px;">Paste any public YouTube URL. Signal Loom extracts the audio, transforms it through the Signal Loom Schema pipeline, and returns structured JSON — timestamps, speakers, topics, entities, ready for AI consumption.</p>
+        <p style="font-size:14px; color: var(--text-secondary); line-height:1.65; margin-bottom:16px;">Paste any public YouTube URL. Signal Loom extracts the audio, transforms it through the Signal Loom Schema pipeline, and returns structured JSON - timestamps, speakers, topics, entities, ready for AI consumption.</p>
         <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
           <li style="font-size:13px; color: var(--text-secondary); display:flex; align-items:center; gap:8px;">
             <span style="color:var(--green);">✓</span> Speaker diarization
@@ -949,7 +963,7 @@
   <div class="container">
     <div class="section-label">Pricing</div>
     <h2 class="section-title reveal">Simple, transparent pricing</h2>
-    <p class="section-sub reveal">Start free, scale as you grow. You're pricing structured intelligence — not raw transcription minutes.</p>
+    <p class="section-sub reveal">Start free, scale as you grow. You're pricing structured intelligence - not raw transcription minutes.</p>
 
     <div class="pricing-grid">
       <div class="pricing-card reveal">
@@ -1264,6 +1278,74 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
   revealEls.forEach(el => observer.observe(el));
+
+  // ── Language Detection ───────────────────────────────────────────────────────
+  const LANG_TAGLINES = {
+    en:    "Works in any language — audio, video, URLs, and live streams.",
+    zh:    "任意语言 — 音频、视频、URL 和直播流。",
+    es:    "Funciona en cualquier idioma — audio, vídeo, URLs y transmisiones en directo.",
+    fr:    "Fonctionne dans n'importe quelle langue — audio, vidéo, URLs et flux en direct.",
+    de:    "Funktioniert in jeder Sprache — Audio, Video, URLs und Live-Streams.",
+    ja:    "あらゆる言語に対応 — 音声、動画、URL、ライブストリーム。",
+    ko:    "모든 언어로 작동 — 오디오, 비디오, URL 및 라이브 스트림.",
+    pt:    "Funciona em qualquer idioma — áudio, vídeo, URLs e transmissões ao vivo.",
+    hi:    "किसी भी भाषा में काम करता है — ऑडियो, वीडियो, URL और लाइव स्ट्रीम।",
+    ar:    "يعمل بأي لغة — الصوت والفيديو وعناوين URL والبث المباشر.",
+  };
+
+  const FALLBACK_TAGLINES = {
+    en: "Works in any language",
+    zh: "任意语言",
+    es: "Cualquier idioma",
+    fr: "N'importe quelle langue",
+    de: "Jede Sprache",
+    ja: "あらゆる言語",
+    ko: "모든 언어",
+    pt: "Qualquer idioma",
+    hi: "कोई भी भाषा",
+    ar: "أي لغة",
+  };
+
+  function getSupportedLang(code) {
+    const base = code.split('-')[0].toLowerCase();
+    return Object.keys(LANG_TAGLINES).includes(base) ? base : null;
+  }
+
+  function applyLanguage(lang) {
+    const tagline = document.getElementById('lang-tagline');
+    const taglineText = LANG_TAGLINES[lang] || LANG_TAGLINES['en'];
+    tagline.textContent = taglineText;
+    tagline.style.display = 'block';
+
+    // Sync picker
+    const picker = document.getElementById('lang-picker');
+    if (picker) picker.value = lang;
+
+    // Persist
+    try { localStorage.setItem('sl_lang', lang); } catch(e) {}
+  }
+
+  function detectAndApply() {
+    const stored = (function() { try { return localStorage.getItem('sl_lang'); } catch(e) { return null; } })();
+    if (stored && Object.keys(LANG_TAGLINES).includes(stored)) {
+      applyLanguage(stored);
+      return;
+    }
+    const browserLang = navigator.language || (navigator.userLanguage || 'en');
+    const lang = getSupportedLang(browserLang) || 'en';
+    applyLanguage(lang);
+  }
+
+  // Language picker
+  const picker = document.getElementById('lang-picker');
+  if (picker) {
+    picker.addEventListener('change', function() {
+      applyLanguage(this.value);
+    });
+  }
+
+  // Run on load
+  detectAndApply();
 </script>
 
 </body>
