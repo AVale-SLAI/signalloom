@@ -440,6 +440,65 @@
     }
     .error-msg.visible { display: block; }
 
+    /* Info banner */
+    .info-banner {
+      background: rgba(91,141,249,0.08);
+      border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 10px;
+      padding: 12px 18px;
+      color: var(--accent-bright);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-banner a { color: var(--accent-bright); text-decoration: underline; }
+    .info-banner.hidden { display: none; }
+
+    /* How it works */
+    .how-it-works {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+    }
+    .how-it-works h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .how-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .how-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(91,141,249,0.15);
+      border: 1px solid rgba(91,141,249,0.3);
+      color: var(--accent-bright);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .how-step-text { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+    .how-step-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+
     /* Footer */
     footer {
       margin-top: auto;
@@ -500,6 +559,12 @@
       <div class="error-msg" id="input-error"></div>
     </div>
 
+    <!-- Info banner: shown when no API key is found -->
+    <div class="info-banner" id="api-key-banner">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      <span id="api-key-banner-text">No API key found. <a href="/signup.html">Sign up free</a> to get live transcription results.</span>
+    </div>
+
     <!-- Player + Status -->
     <div class="stage-grid">
       <div class="player-card">
@@ -545,6 +610,29 @@
             <span class="step-icon">✓</span>
             <span>Done — structured output ready</span>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="how-it-works">
+      <h4>How it works</h4>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <div class="how-step-text"><strong>Extract</strong>Audio isolated from video via yt-dlp</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div class="how-step-text"><strong>Transcribe</strong>Whisper model converts speech to text</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div class="how-step-text"><strong>Structure</strong>Output formatted to Signal Loom Schema</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">4</div>
+          <div class="how-step-text"><strong>Deliver</strong>Structured JSON returned via REST API</div>
         </div>
       </div>
     </div>
@@ -733,7 +821,11 @@
       } catch (err) {
         setStatus('error', 'Failed');
         setStep('step-extract', 'failed');
-        showError(err.message || 'Something went wrong. Please try again.');
+        let userMsg = err.message || 'Something went wrong. Please try again.';
+        if (err.failure_code) {
+          userMsg = `[${err.failure_code}] ${userMsg}`;
+        }
+        showError(userMsg);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Transcribe';
@@ -746,15 +838,21 @@
 
       while (Date.now() - start < maxWaitMs) {
         await sleep(interval);
+        const elapsed = Math.round((Date.now() - start) / 1000);
+        setStatus('running', `Transcribing… ${elapsed}s`);
         try {
           const res = await fetch(`${API_BASE}/v1/status/${jobId}`, {
             headers: { 'Authorization': `Bearer ${apiKey}` }
           });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({ detail: 'Request failed' }));
+            return { status: 'failed', error: err.detail || `HTTP ${res.status}`, failure_code: err.failure_code };
+          }
           const status = await res.json();
           if (status.status === 'completed') return status;
-          if (status.status === 'failed') return { status: 'failed', error: status.error };
+          if (status.status === 'failed') return { status: 'failed', error: status.error, failure_code: status.failure_code };
         } catch (e) {
-          // Continue polling
+          // Continue polling on network errors
         }
       }
       return { status: 'timeout', error: 'Job timed out' };
@@ -762,6 +860,37 @@
 
     function buildDemoSLS(fileInfo, url) {
       // Real output — demonstrates what a real transcription would return in SLS format
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        return {
+          schema: "Signal Loom Schema v1",
+          schema_url: "https://signalloomai.com/schema",
+          source_ref: url,
+          source_kind: "youtube_url",
+          media_kind: "audio",
+          language: "en",
+          model: "mlx-community/whisper-large-v3-turbo",
+          created_at: new Date().toISOString(),
+          duration_seconds: fileInfo.duration_seconds || 213,
+          normalized_text: null,
+          text: null,
+          segments: [],
+          _notice: "Connect your API key to see live transcription results.",
+          _cta: "/signup.html",
+          metadata: {
+            platform: "youtube",
+            video_id: parseVideoId(url),
+            extraction_time_seconds: (fileInfo.duration_seconds || 0) * 0.023,
+            format: "m4a",
+            schema_dimensions: [
+              { dimension: "temporal", description: "timestamped segments with start/end seconds" },
+              { dimension: "speaker", description: "speaker labels when diarization is enabled" },
+              { dimension: "semantic", description: "topic tags and entity extraction" },
+              { dimension: "provenance", description: "source reference + platform metadata" }
+            ]
+          }
+        };
+      }
       return {
         schema: "Signal Loom Schema v1",
         schema_url: "https://signalloomai.com/schema",
@@ -772,8 +901,8 @@
         model: "mlx-community/whisper-large-v3-turbo",
         created_at: new Date().toISOString(),
         duration_seconds: fileInfo.duration_seconds || 213,
-        normalized_text: "[Transcription would appear here — connect an API key for live results]",
-        text: "[Transcription would appear here — connect an API key for live results]",
+        normalized_text: "[Transcription would appear here]",
+        text: "[Transcription would appear here]",
         segments: [],
         metadata: {
           platform: "youtube",
@@ -846,11 +975,16 @@
       return new Promise(r => setTimeout(r, ms));
     }
 
-    // On page load: check for API key in localStorage
+    // On page load: check for API key in localStorage and update banner
     window.addEventListener('DOMContentLoaded', () => {
       const key = getApiKey();
+      const banner = document.getElementById('api-key-banner');
+      const bannerText = document.getElementById('api-key-banner-text');
       if (key) {
-        // API key available — would use live transcription
+        banner.classList.add('hidden');
+      } else {
+        banner.classList.remove('hidden');
+        bannerText.innerHTML = 'No API key found. <a href="/signup.html">Sign up free</a> to get live transcription results.';
       }
     });
   </script>
