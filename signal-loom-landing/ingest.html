@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Ingest — Signal Loom AI</title>
+  <title>YouTube Ingest — Signal Loom AI — Turn Any Video Into Structured Intelligence</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
   <style>
     :root {
@@ -527,7 +527,7 @@
       <li><a href="/pricing.html">Pricing</a></li>
       <li><a href="/demo.html">Demo</a></li>
       <li><a href="/ingest.html" class="active">YouTube</a></li>
-      <li><a href="mailto:hello@signalloomai.com">Contact</a></li>
+      <li><select id="lang-picker" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:13px;padding:5px 8px;cursor:pointer;outline:none;"><option value="en">🌐 EN</option><option value="zh">🇨🇳 中文</option><option value="es">🇪🇸 Español</option><option value="fr">🇫🇷 Français</option><option value="de">🇩🇪 Deutsch</option><option value="ja">🇯🇵 日本語</option><option value="ko">🇰🇷 한국어</option><option value="pt">🇧🇷 Português</option><option value="hi">🇮🇳 हिन्दी</option><option value="ar">🇸🇦 العربية</option></select></li><li><a href="mailto:hello@signalloomai.com">Contact</a></li>
     </ul>
   </nav>
 
@@ -537,7 +537,8 @@
       YouTube Ingest
     </div>
     <h1>Turn any YouTube video into a <em>machine-readable knowledge object</em></h1>
-    <p>Paste a URL. Get structured, timestamped, speaker-aware transcription — not a raw transcript. Built on Signal Loom Schema. No account required to try.</p>
+    <p>Paste a URL. Get a provenance-rich, machine-readable knowledge object — timestamps, speakers, topics, entities — not just a transcript. Built on Signal Loom Schema.</p>
+    <p id="lang-tagline" style="font-size:14px;color:var(--accent-bright);display:none;margin-top:8px;"></p>
   </section>
 
   <div class="container">
@@ -624,7 +625,7 @@
         </div>
         <div class="how-step">
           <div class="how-step-num">2</div>
-          <div class="how-step-text"><strong>Transcribe</strong>Whisper model converts speech to text</div>
+          <div class="how-step-text"><strong>Transcribe</strong>Speech converted to structured text with timestamps</div>
         </div>
         <div class="how-step">
           <div class="how-step-num">3</div>
@@ -659,7 +660,7 @@
     <div class="cta-strip">
       <div>
         <h3>Ready to build with the full API?</h3>
-        <p>Get an API key and integrate SLS-structured transcription into your workflow.</p>
+        <p>Get an API key and integrate structured intelligence into your workflow.</p>
       </div>
       <a href="/signup.html" class="btn-outline">Get API Key →</a>
     </div>
@@ -987,6 +988,50 @@
         bannerText.innerHTML = 'No API key found. <a href="/signup.html">Sign up free</a> to get live transcription results.';
       }
     });
+
+    // ── Language Detection ───────────────────────────────────────────────────
+    const LANG_TAGLINES = {
+      en:    "Works in any language — audio, video, URLs, and live streams.",
+      zh:    "任意语言 — 音频、视频、URL 和直播流。",
+      es:    "Funciona en cualquier idioma — audio, vídeo, URLs y transmisiones en directo.",
+      fr:    "Fonctionne dans n'importe quelle langue — audio, vidéo, URLs et flux en direct.",
+      de:    "Funktioniert in jeder Sprache — Audio, Video, URLs und Live-Streams.",
+      ja:    "あらゆる言語に対応 — 音声、動画、URL、ライブストリーム。",
+      ko:    "모든 언어로 작동 — 오디오, 비디오, URL 및 라이브 스트림.",
+      pt:    "Funciona em qualquer idioma — áudio, vídeo, URLs e transmissões ao vivo.",
+      hi:    "किसी भी भाषा में काम करता है — ऑडियो, वीडियो, URL और लाइव स्ट्रीम।",
+      ar:    "يعمل بأي لغة — الصوت والفيديو وعناوين URL والبث المباشر.",
+    };
+
+    function getSupportedLang(code) {
+      const base = code.split('-')[0].toLowerCase();
+      return Object.keys(LANG_TAGLINES).includes(base) ? base : null;
+    }
+
+    function applyLanguage(lang) {
+      const tagline = document.getElementById('lang-tagline');
+      if (!tagline) return;
+      tagline.textContent = LANG_TAGLINES[lang] || LANG_TAGLINES['en'];
+      tagline.style.display = 'block';
+      const picker = document.getElementById('lang-picker');
+      if (picker) picker.value = lang;
+      try { localStorage.setItem('sl_lang', lang); } catch(e) {}
+    }
+
+    function detectAndApply() {
+      const stored = (function() { try { return localStorage.getItem('sl_lang'); } catch(e) { return null; } })();
+      if (stored && Object.keys(LANG_TAGLINES).includes(stored)) {
+        applyLanguage(stored); return;
+      }
+      const browserLang = navigator.language || (navigator.userLanguage || 'en');
+      applyLanguage(getSupportedLang(browserLang) || 'en');
+    }
+
+    const langPicker = document.getElementById('lang-picker');
+    if (langPicker) {
+      langPicker.addEventListener('change', function() { applyLanguage(this.value); });
+    }
+    detectAndApply();
   </script>
 </body>
 </html>
