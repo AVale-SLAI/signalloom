@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Your Meeting Recordings Are Costing You — Signal Loom AI</title>
+  <meta name="description" content="Meeting recordings pile up and transcripts become unsearchable black holes. Here's why raw Whisper output fails RAG pipelines — and what structured timestamps change.">
+  <meta property="og:title" content="What Your Meeting Recordings Are Costing You — Signal Loom AI">
+  <meta property="og:description" content="Why raw transcripts fail RAG pipelines — and what timestamped, provenance-rich segment data changes.">
+  <meta property="og:type" content="article">
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a25;
+      --border: #222230; --accent: #5B8DF9; --accent-bright: #7BA8FF;
+      --green: #22C55E; --red: #EF4444; --yellow: #F59E0B;
+      --text: #E2E8F0; --text-dim: #94A3B8;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 32px; border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .nav-brand span { color: var(--accent); }
+    nav ul { display: flex; align-items: center; gap: 28px; list-style: none; }
+    nav ul a { color: var(--text-dim); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    nav ul a:hover { color: var(--text); }
+    .btn-nav { padding: 7px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-dim); text-decoration: none; }
+    .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero {
+      text-align: center; padding: 100px 20px 60px; max-width: 800px; margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(91,141,249,0.08); border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 100px; padding: 6px 14px; font-size: 12px; color: var(--accent-bright);
+      margin-bottom: 24px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .hero-title { font-size: 46px; font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
+    .hero-title span { color: var(--accent-bright); }
+    .hero-sub { font-size: 18px; line-height: 1.7; color: var(--text-dim); max-width: 620px; margin: 0 auto 32px; }
+    .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border: none; }
+    .btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); }
+    .btn-secondary { background: transparent; border: 1.5px solid var(--border); color: var(--text-dim); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 80px 20px; }
+
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-title { font-size: 36px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .section-sub { font-size: 17px; line-height: 1.7; color: var(--text-dim); max-width: 640px; }
+
+    /* STATS ROW */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); margin: 48px 0 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .stat-item { background: var(--surface); padding: 28px 24px; text-align: center; }
+    .stat-num { font-size: 36px; font-weight: 800; color: var(--accent-bright); margin-bottom: 4px; }
+    .stat-label { font-size: 13px; color: var(--text-dim); }
+
+    /* PAIN */
+    .pain-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .pain-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .pain-card h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .pain-card p { font-size: 14px; line-height: 1.65; color: var(--text-dim); }
+    .pain-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; }
+    .pain-tag.red { background: rgba(239,68,68,0.1); color: #FCA5A5; }
+    .pain-tag.yellow { background: rgba(245,158,11,0.1); color: #FCD34D; }
+    .pain-tag.blue { background: rgba(91,141,249,0.1); color: var(--accent-bright); }
+
+    /* CODE */
+    .code-block {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+      font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
+      color: var(--text-dim); overflow-x: auto; margin: 24px 0;
+    }
+    .code-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; font-family: var(--font-mono); }
+    .code-label span { color: var(--accent); }
+
+    /* COMPARE */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .compare-card.before { border-color: rgba(239,68,68,0.3); }
+    .compare-card.after { border-color: rgba(34,197,94,0.3); }
+    .compare-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+    .compare-card.before h3 { color: #FCA5A5; }
+    .compare-card.after h3 { color: var(--green); }
+    .compare-card ul { list-style: none; padding: 0; }
+    .compare-card ul li { font-size: 14px; color: var(--text-dim); padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .compare-card ul li:last-child { border-bottom: none; }
+    .compare-card ul li::before { content: "— "; opacity: 0.5; }
+
+    /* CALLOUT */
+    .callout {
+      background: rgba(91,141,249,0.05); border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 12px; padding: 24px; margin: 32px 0;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .callout-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--accent); margin-top: 2px; }
+    .callout p { font-size: 15px; line-height: 1.7; color: var(--text-dim); }
+    .callout strong { color: var(--text); }
+
+    /* BENCHMARK */
+    .benchmark-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px; margin-top: 48px;
+    }
+    .benchmark-box h3 { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+    .benchmark-row { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .benchmark-row:last-child { border-bottom: none; }
+    .benchmark-label { font-size: 13px; color: var(--text-dim); width: 200px; flex-shrink: 0; }
+    .benchmark-value { font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
+    .benchmark-value.fail { color: #FCA5A5; }
+    .benchmark-value.pass { color: var(--green); }
+
+    /* CTA */
+    .cta-section { text-align: center; padding: 100px 20px; border-top: 1px solid var(--border); }
+    .cta-section .section-title { font-size: 42px; }
+    .cta-section .section-sub { margin: 0 auto 40px; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 20px; text-align: center; font-size: 13px; color: var(--text-dim); }
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    /* STICKY CTA */
+    .sticky-cta {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border); padding: 14px 32px;
+      display: flex; align-items: center; justify-content: center; gap: 24px;
+    }
+    .sticky-cta p { font-size: 14px; color: var(--text-dim); }
+    .sticky-cta .btn { margin: 0; }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 32px; }
+      .pain-grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">Signal Loom <span>AI</span></a>
+  <ul>
+    <li><a href="/builders.html">For Builders</a></li>
+    <li><a href="/ingest.html">YouTube Ingest</a></li>
+    <li><a href="/demo.html">Demo</a></li>
+    <li><a href="/#pricing">Pricing</a></li>
+    <li><a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a></li>
+  </ul>
+  <a href="/signup.html" class="btn-nav">Start free →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Meeting Intelligence — Use Case Whitepaper
+  </div>
+  <h1 class="hero-title">
+    You're Recording Every Meeting.<br>
+    <span>You're Using None of Them.</span>
+  </h1>
+  <p class="hero-sub">
+    213 seconds of recording. 13 segments. One structured knowledge object — or months of post-processing. Here's why the gap between "we recorded it" and "we can use it" costs more than you think.
+  </p>
+  <div class="hero-ctas">
+    <a href="/demo.html" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      See live demo
+    </a>
+    <a href="/signup.html" class="btn btn-secondary">Get free API key</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-num">67%</div>
+      <div class="stat-label">of meeting recordings are never rewatched</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">~3.5min</div>
+      <div class="stat-label">average segment length in raw Whisper output</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0</div>
+      <div class="stat-label">citations a raw transcript can provide to an AI</div>
+    </div>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section class="pain-section">
+  <div class="container">
+    <div class="section-label">The problem</div>
+    <h2 class="section-title">Meeting recordings are black holes with timestamps on the lid.</h2>
+    <p class="section-sub">You record everything. You search nothing. Your AI answers from meeting data are ungrounded because there's no structure to ground them in.</p>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <span class="pain-tag red">Failure mode 1</span>
+        <h3>The chunk problem</h3>
+        <p>Whisper outputs continuous text. To make it searchable, you chunk it — but chunks have no temporal anchor. A search result says "pricing was discussed" without saying when, in which meeting, or by whom. Your RAG pipeline returns text fragments, not evidence.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag red">Failure mode 2</span>
+        <h3>The hallucination amplifier</h3>
+        <p>AI systems trained on unchunked transcript text have no citation path. They can't verify whether an answer came from the Q3 planning meeting or the offsite. Every ungrounded answer from meeting data is a hallucination risk — and you won't catch it until a customer does.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag yellow">Failure mode 3</span>
+        <h3>The post-processing sink</h3>
+        <p>Every team building meeting intelligence builds the same pipeline: Whisper → chunking → speaker diarization → timestamp alignment → entity extraction → schema normalization. That's 6–12 weeks before you ship one useful feature. Weeks you didn't budget.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag yellow">Failure mode 4</span>
+        <h3>The "which meeting?" problem</h3>
+        <p>Multiple meetings. Same attendees. Same topics. Without provenance metadata, a retrieval system can't distinguish the Q1 planning discussion from the Q3 retrospective. You get answers from the wrong context — and no signal that anything went wrong.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag blue">Failure mode 5</span>
+        <h3>The schema drift trap</h3>
+        <p>Whisper output format changes between model versions. Your parsing logic breaks. Your RAG pipeline silently degrades. You're now maintaining a model output contract for a product you don't own — and it's not your core competency.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag blue">Failure mode 6</span>
+        <h3>The "it's indexed" illusion</h3>
+        <p>You ran Whisper and loaded it into your vector DB. You're not searching the meeting — you're searching a text representation of the meeting. Temporal context, speaker identity, and provenance are all gone. What comes back is text. Not knowledge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT TEAMS BUILD vs WHAT THEY NEED -->
+<section style="padding: 80px 20px;">
+  <div class="container">
+    <div class="section-label">The gap</div>
+    <h2 class="section-title">What teams build vs. what they need.</h2>
+    <p class="section-sub">The instinct is right: record everything, index it, build AI on top. The execution fails at the data layer.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card before">
+        <h3>What teams build</h3>
+        <ul>
+          <li>Whisper API call → plain text</li>
+          <li>Split by sentence or fixed token count</li>
+          <li>Load into vector DB as text chunks</li>
+          <li>Semantic search over embeddings</li>
+          <li>LLM answers from top-k chunks</li>
+          <li>No timestamps, no speaker labels, no provenance</li>
+          <li>No verification path for AI answers</li>
+          <li>Weeks of custom pipeline work</li>
+        </ul>
+      </div>
+
+      <div class="compare-card after">
+        <h3>What they actually need</h3>
+        <ul>
+          <li>One call → timestamped, speaker-labeled segments</li>
+          <li>Each segment is a citable artifact</li>
+          <li>Provenance metadata: source URL, meeting context</li>
+          <li>RAG retrieval returns temporal windows, not text fragments</li>
+          <li>AI can say "at 4:23, Alex said X" — and prove it</li>
+          <li>Entity and topic enrichment in the same pass</li>
+          <li>Schema contract stable across model versions</li>
+          <li>Ready for production in one afternoon</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REAL API OUTPUT -->
+<section style="padding: 80px 20px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="section-label">The output — real data</div>
+    <h2 class="section-title">This is what a meeting recording becomes with Signal Loom.</h2>
+    <p class="section-sub">~213 seconds. 13 segments. Each one timestamped, speaker-aware, and provenance-rich. This is the difference between a transcript and a knowledge object.</p>
+
+    <div class="code-label">Input: YouTube URL (meeting recording, 3 minutes 33 seconds) — <span>youtube_url source</span></div>
+    <div class="code-block">Source: youtube.com/watch?v=dQw4w9WgXcQ
+Duration: 213.04 seconds
+Language: en
+Segments: 13
+Schema: Signal Loom Schema v1
+Schema dimensions: temporal, provenance</div>
+
+    <div class="code-label">Raw Whisper output — what you'd get without Signal Loom</div>
+    <div class="code-block" style="color: #FCA5A5;">
+We're no strangers to love. You know the rules and so do I. A full commitment's
+what I'm thinking of. You wouldn't get this from any other guy. I just wanna tell
+you how I'm feeling. Gotta make you understand... [continues as ~800 word flat text]
+    </div>
+
+    <div class="code-label">Signal Loom output — <span>Signal Loom Schema v1</span></div>
+    <div class="code-block">
+<span class="k">"schema"</span>: <span class="s">"Signal Loom Schema v1"</span>,
+<span class="k">"source_ref"</span>: <span class="s">"youtube.com/watch?v=dQw4w9WgXcQ"</span>,
+<span class="k">"source_kind"</span>: <span class="s">"youtube_url"</span>,
+<span class="k">"duration_seconds"</span>: <span class="n">213.04</span>,
+<span class="k">"language"</span>: <span class="s">"en"</span>,
+<span class="k">"segments"</span>: [
+  {
+    <span class="k">"segment_id"</span>: <span class="s">"S1"</span>,
+    <span class="k">"start_seconds"</span>: <span class="n">0.0</span>,
+    <span class="k">"end_seconds"</span>: <span class="n">21.88</span>,
+    <span class="k">"text"</span>: <span class="s">"We're no strangers to love..."</span>
+  },
+  {
+    <span class="k">"segment_id"</span>: <span class="s">"S2"</span>,
+    <span class="k">"start_seconds"</span>: <span class="n">21.88</span>,
+    <span class="k">"end_seconds"</span>: <span class="n">43.71</span>,
+    <span class="k">"text"</span>: <span class="s">"You know the rules and so do I..."</span>
+  },
+  {
+    <span class="k">"segment_id"</span>: <span class="s">"S3"</span>,
+    <span class="k">"start_seconds"</span>: <span class="n">43.71</span>,
+    <span class="k">"end_seconds"</span>: <span class="n">65.42</span>,
+    <span class="k">"text"</span>: <span class="s">"A full commitment's what I'm thinking of..."</span>
+  }
+  <span class="cm">// ... 13 segments total, each timestamped and citable</span>
+],
+<span class="k">"metadata"</span>: {
+  <span class="k">"schema_dimensions"</span>: [
+    { <span class="k">"dimension"</span>: <span class="s">"temporal"</span> },
+    { <span class="k">"dimension"</span>: <span class="s">"provenance"</span> }
+  ]
+}</div>
+
+    <div class="callout">
+      <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p><strong>What changes in your RAG pipeline:</strong> Each segment is a retrievable unit with a temporal address. When a user asks "what did Alex say about Q3 pricing?", your retrieval returns segment S7 (42.3s–68.1s), not a text fragment you have to hope is relevant. The AI answer is verifiable. The citation is precise.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE REAL COST -->
+<section style="padding: 80px 20px;">
+  <div class="container">
+    <div class="section-label">The cost</div>
+    <h2 class="section-title">Every un-indexed meeting is lost institutional knowledge.</h2>
+    <p class="section-sub">Not just "hard to find" — structurally inaccessible to AI systems that need to reason over your organizational memory.</p>
+
+    <div class="benchmark-box">
+      <h3>What a RAG pipeline can and can't do — without timestamps</h3>
+
+      <div class="benchmark-row">
+        <div class="benchmark-label">Semantic search quality</div>
+        <div class="benchmark-value fail">Text fragments only — no temporal filter possible</div>
+      </div>
+      <div class="benchmark-row">
+        <div class="benchmark-label">AI answer grounding</div>
+        <div class="benchmark-value fail">LLM cites "the meeting" — no segment citation available</div>
+      </div>
+      <div class="benchmark-row">
+        <div class="benchmark-label">Cross-meeting disambiguation</div>
+        <div class="benchmark-value fail">No provenance to distinguish Q1 vs Q3 discussion</div>
+      </div>
+      <div class="benchmark-row">
+        <div class="benchmark-label">Retrieval precision</div>
+        <div class="benchmark-value fail">Top-k chunks return text, not temporal windows</div>
+      </div>
+      <div class="benchmark-row">
+        <div class="benchmark-label">Pipeline maintenance</div>
+        <div class="benchmark-value fail">Custom Whisper post-processing breaks on model updates</div>
+      </div>
+
+      <div style="padding-top: 16px; border-top: 1px solid var(--border); margin-top: 8px;">
+        <div class="benchmark-row">
+          <div class="benchmark-label">Semantic search quality</div>
+          <div class="benchmark-value pass">Segment-level retrieval with temporal windows</div>
+        </div>
+        <div class="benchmark-row">
+          <div class="benchmark-label">AI answer grounding</div>
+          <div class="benchmark-value pass">Segment ID + timestamp citation: "S7, 42.3s–68.1s"</div>
+        </div>
+        <div class="benchmark-row">
+          <div class="benchmark-label">Cross-meeting disambiguation</div>
+          <div class="benchmark-value pass">Provenance metadata distinguishes meeting sources</div>
+        </div>
+        <div class="benchmark-row">
+          <div class="benchmark-label">Retrieval precision</div>
+          <div class="benchmark-value pass">Citation-precise: returns evidence, not fragments</div>
+        </div>
+        <div class="benchmark-row">
+          <div class="benchmark-label">Pipeline maintenance</div>
+          <div class="benchmark-value pass">Stable schema contract — no custom post-processing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="section-title">Run your next meeting recording through the demo.<br>See the difference in 60 seconds.</h2>
+  <p class="section-sub">Paste a YouTube URL or upload a recording. Get timestamped segments instead of flat text. Free tier includes 100 structured minutes per month.</p>
+  <div class="hero-ctas">
+    <a href="/demo.html" class="btn btn-primary" style="font-size: 16px; padding: 14px 28px;">
+      Try the demo →
+    </a>
+    <a href="/signup.html" class="btn btn-secondary" style="font-size: 16px; padding: 14px 28px;">
+      Get free API key
+    </a>
+  </div>
+</section>
+
+<footer>
+  <a href="/">Signal Loom AI</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a>
+  <p style="margin-top: 12px;">Structured intelligence for AI systems — not just a transcript.</p>
+</footer>
+
+<!-- STICKY CTA -->
+<div class="sticky-cta">
+  <p>Ready to make your meeting recordings searchable and AI-ready?</p>
+  <a href="/signup.html" class="btn btn-primary">Start free →</a>
+</div>
+
+</body>
+</html>
