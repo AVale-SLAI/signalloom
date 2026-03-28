@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Voice Agents Hallucinate — and What Timestamps Have to Do With It — Signal Loom AI</title>
+  <meta name="description" content="A voice agent without timestamps is flying blind. Here's why temporal context, speaker grounding, and session state are the difference between a grounded voice AI and one that hallucinates context it never had.">
+  <meta property="og:title" content="Why Voice Agents Hallucinate — and What Timestamps Have to Do With It — Signal Loom AI">
+  <meta property="og:description" content="WebSocket streaming delivers timestamped partial transcripts at 300ms granularity. Here's why that changes everything for voice AI grounding.">
+  <meta property="og:type" content="article">
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a25;
+      --border: #222230; --accent: #5B8DF9; --accent-bright: #7BA8FF;
+      --green: #22C55E; --red: #EF4444; --yellow: #F59E0B;
+      --text: #E2E8F0; --text-dim: #94A3B8;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 32px; border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .nav-brand span { color: var(--accent); }
+    nav ul { display: flex; align-items: center; gap: 28px; list-style: none; }
+    nav ul a { color: var(--text-dim); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    nav ul a:hover { color: var(--text); }
+    .btn-nav { padding: 7px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-dim); text-decoration: none; }
+    .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero {
+      text-align: center; padding: 100px 20px 60px; max-width: 800px; margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(91,141,249,0.08); border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 100px; padding: 6px 14px; font-size: 12px; color: var(--accent-bright);
+      margin-bottom: 24px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .hero-title { font-size: 46px; font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
+    .hero-title span { color: var(--accent-bright); }
+    .hero-sub { font-size: 18px; line-height: 1.7; color: var(--text-dim); max-width: 620px; margin: 0 auto 32px; }
+    .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border: none; }
+    .btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); }
+    .btn-secondary { background: transparent; border: 1.5px solid var(--border); color: var(--text-dim); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 80px 20px; }
+
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-title { font-size: 36px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .section-sub { font-size: 17px; line-height: 1.7; color: var(--text-dim); max-width: 640px; }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); margin: 48px 0 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .stat-item { background: var(--surface); padding: 28px 24px; text-align: center; }
+    .stat-num { font-size: 36px; font-weight: 800; color: var(--accent-bright); margin-bottom: 4px; }
+    .stat-label { font-size: 13px; color: var(--text-dim); }
+
+    /* PAIN */
+    .pain-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .pain-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .pain-card h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .pain-card p { font-size: 14px; line-height: 1.65; color: var(--text-dim); }
+    .pain-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; }
+    .pain-tag.red { background: rgba(239,68,68,0.1); color: #FCA5A5; }
+    .pain-tag.yellow { background: rgba(245,158,11,0.1); color: #FCD34D; }
+    .pain-tag.blue { background: rgba(91,141,249,0.1); color: var(--accent-bright); }
+
+    /* CODE */
+    .code-block {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+      font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
+      color: var(--text-dim); overflow-x: auto; margin: 24px 0;
+    }
+    .code-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; font-family: var(--font-mono); }
+    .code-label span { color: var(--accent); }
+
+    /* STREAMING FLOW */
+    .stream-flow { display: flex; flex-direction: column; gap: 0; margin-top: 48px; }
+    .stream-step {
+      display: flex; gap: 20px; align-items: flex-start;
+      padding: 20px 0; border-bottom: 1px solid var(--border);
+    }
+    .stream-step:last-child { border-bottom: none; }
+    .stream-num { width: 28px; height: 28px; border-radius: 50%; background: rgba(91,141,249,0.1); border: 1px solid rgba(91,141,249,0.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .stream-content h4 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .stream-content p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+    /* CALLOUT */
+    .callout {
+      background: rgba(91,141,249,0.05); border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 12px; padding: 24px; margin: 32px 0;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .callout-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--accent); margin-top: 2px; }
+    .callout p { font-size: 15px; line-height: 1.7; color: var(--text-dim); }
+    .callout strong { color: var(--text); }
+
+    /* COMPARE */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .compare-card.before { border-color: rgba(239,68,68,0.3); }
+    .compare-card.after { border-color: rgba(34,197,94,0.3); }
+    .compare-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+    .compare-card.before h3 { color: #FCA5A5; }
+    .compare-card.after h3 { color: var(--green); }
+    .compare-card ul { list-style: none; padding: 0; }
+    .compare-card ul li { font-size: 14px; color: var(--text-dim); padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .compare-card ul li:last-child { border-bottom: none; }
+    .compare-card ul li::before { content: "— "; opacity: 0.5; }
+
+    /* GRAPHIC */
+    .timing-graphic {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px; margin-top: 48px;
+    }
+    .timing-graphic h3 { font-size: 18px; font-weight: 800; margin-bottom: 24px; }
+    .timing-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .timing-label { font-size: 12px; color: var(--text-dim); width: 140px; flex-shrink: 0; font-family: var(--font-mono); }
+    .timing-track { flex: 1; height: 24px; background: var(--bg); border-radius: 4px; overflow: hidden; position: relative; }
+    .timing-fill { height: 100%; border-radius: 4px; }
+    .timing-fill.batch { background: rgba(239,68,68,0.4); width: 100%; }
+    .timing-fill.stream { background: rgba(34,197,94,0.4); width: 22%; }
+    .timing-value { font-size: 12px; font-weight: 700; font-family: var(--font-mono); }
+    .timing-value.batch { color: #FCA5A5; }
+    .timing-value.stream { color: var(--green); }
+    .timing-note { font-size: 12px; color: var(--text-dim); margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+    /* CTA */
+    .cta-section { text-align: center; padding: 100px 20px; border-top: 1px solid var(--border); }
+    .cta-section .section-title { font-size: 42px; }
+    .cta-section .section-sub { margin: 0 auto 40px; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 20px; text-align: center; font-size: 13px; color: var(--text-dim); }
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    /* STICKY CTA */
+    .sticky-cta {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border); padding: 14px 32px;
+      display: flex; align-items: center; justify-content: center; gap: 24px;
+    }
+    .sticky-cta p { font-size: 14px; color: var(--text-dim); }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 32px; }
+      .pain-grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">Signal Loom <span>AI</span></a>
+  <ul>
+    <li><a href="/builders.html">For Builders</a></li>
+    <li><a href="/ingest.html">YouTube Ingest</a></li>
+    <li><a href="/demo.html">Demo</a></li>
+    <li><a href="/#pricing">Pricing</a></li>
+    <li><a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a></li>
+  </ul>
+  <a href="/signup.html" class="btn-nav">Start free →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Voice AI Engineering — Use Case Whitepaper
+  </div>
+  <h1 class="hero-title">
+    A Voice Agent Without Timestamps<br>
+    <span>Is Flying Blind.</span>
+  </h1>
+  <p class="hero-sub">
+    Voice agents hallucinate context because they have no evidence. A timestamped segment is a citable artifact — the difference between "the user said X" and "at 4.3 seconds, the user said X, and that statement can be verified." That difference is everything.
+  </p>
+  <div class="hero-ctas">
+    <a href="/demo.html" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      See streaming demo
+    </a>
+    <a href="/signup.html" class="btn btn-secondary">Get free API key</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-num">0ms</div>
+      <div class="stat-label">temporal context in a batch transcript</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">300ms</div>
+      <div class="stat-label">granularity of WebSocket partial timestamps</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">4.6×</div>
+      <div class="stat-label">realtime processing with streaming (45s audio in ~10s)</div>
+    </div>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section class="pain-section">
+  <div class="container">
+    <div class="section-label">The problem</div>
+    <h2 class="section-title">Voice agents generate responses from raw transcripts. Then they hallucinate context.</h2>
+    <p class="section-sub">The architecture most voice AI systems ship with is: microphone → speech-to-text → LLM → response. Every step in that chain loses something the next step needed. Here's where it breaks down.</p>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <span class="pain-tag red">Failure mode 1</span>
+        <h3>No temporal context</h3>
+        <p>A batch transcript gives you the whole conversation after it finishes. During the conversation, the agent has no idea where in the audio timeline it is. It can't reason about timing, pacing, or what was just said vs. said three minutes ago.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag red">Failure mode 2</span>
+        <h3>No speaker grounding</h3>
+        <p>The transcript doesn't know who said what. The agent has to guess from context — which means it sometimes assigns user statements to the assistant and vice versa. A grounded agent knows the speaker identity for every segment it reasons over.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag yellow">Failure mode 3</span>
+        <h3>No session state accumulation</h3>
+        <p>Partial transcripts arrive as text with no state tracking. The agent doesn't accumulate a coherent picture of the conversation — it processes text fragments it has to re-interpret every time, without the benefit of a growing context window it's actually reasoning over correctly.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag yellow">Failure mode 4</span>
+        <h3>The hallucination amplifier</h3>
+        <p>Without timestamps, the agent can't say "at 4.3 seconds, the user said X." It has to say "the user said X" — and that statement has no verification path. When the agent confabulates context, there's no artifact to check it against.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag blue">Failure mode 5</span>
+        <h3>Late context = wrong responses</h3>
+        <p>In a real-time voice call, you can't wait for a batch transcript to finish before you respond. But early responses are made with less context. A streaming architecture gives you partial context in real time — enough to respond accurately without waiting for the full audio.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag blue">Failure mode 6</span>
+        <h3>No citation path for downstream systems</h3>
+        <p>If your voice agent handles a support call, your QA team can't verify what the agent said was grounded in what the user actually said. Without timestamps, every agent response is post-hoc — you can't replay the evidence that justified it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY TIMESTAMPS FIX IT -->
+<section style="padding: 80px 20px;">
+  <div class="container">
+    <div class="section-label">Why timestamps fix it</div>
+    <h2 class="section-title">A timestamped segment is a citable artifact.</h2>
+    <p class="section-sub">When every transcript fragment has a temporal address, the agent can say "at 4.3 seconds, the user said X" — and that statement can be verified. That's the difference between a statement with evidence and a hallucination waiting to happen.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card before">
+        <h3>Without timestamps</h3>
+        <ul>
+          <li>Agent: "Based on what you said about pricing..."</li>
+          <li>No way to verify which moment the agent referenced</li>
+          <li>No way to replay what "pricing" actually referred to</li>
+          <li>QA cannot verify agent response accuracy</li>
+          <li>Context window is text-only — no temporal dimension</li>
+          <li>Agent loses track of conversation state across turns</li>
+        </ul>
+      </div>
+
+      <div class="compare-card after">
+        <h3>With timestamped streaming</h3>
+        <ul>
+          <li>Agent: "At 4.3s, you mentioned you're on the Pro plan..."</li>
+          <li>That statement maps to a specific audio segment</li>
+          <li>The segment is a verifiable artifact</li>
+          <li>QA can replay segment S2 (4.3s–8.1s) and confirm</li>
+          <li>Session state accumulates across timestamps</li>
+          <li>Agent reasons over temporal windows, not just text</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="padding: 80px 20px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="section-label">The mechanism</div>
+    <h2 class="section-title">WebSocket streaming: partial transcripts as they happen.</h2>
+    <p class="section-sub">Batch transcription gives you the whole transcript after the fact. WebSocket streaming gives you timestamps at 300ms granularity — real-time context, not post-hoc reconstruction.</p>
+
+    <div class="stream-flow">
+      <div class="stream-step">
+        <div class="stream-num">1</div>
+        <div class="stream-content">
+          <h4>Audio chunk arrives from microphone</h4>
+          <p>A stream of raw audio bytes — from a live call, a microphone input, or a streaming source. Each chunk is processed as it arrives, not accumulated and processed at end-of-stream.</p>
+        </div>
+      </div>
+      <div class="stream-step">
+        <div class="stream-num">2</div>
+        <div class="stream-content">
+          <h4>Partial transcript emitted with timestamps</h4>
+          <p>Signal Loom WebSocket returns a partial transcript object for each processed segment — with start_seconds, end_seconds, text, and language. The segment is available to the agent immediately, before the full audio finishes.</p>
+        </div>
+      </div>
+      <div class="stream-step">
+        <div class="stream-num">3</div>
+        <div class="stream-content">
+          <h4>Session state accumulates across chunks</h4>
+          <p>Each partial transcript appends to session state. The agent builds a temporal picture of the conversation as it happens — not reconstructs it after the fact. Context windows are populated with timestamped evidence, not raw text fragments.</p>
+        </div>
+      </div>
+      <div class="stream-step">
+        <div class="stream-num">4</div>
+        <div class="stream-content">
+          <h4>Agent reasons over timestamps, not just text</h4>
+          <p>With temporal context, the agent can weight recency, track what was said earlier vs. later, and cite specific moments when responding. Its responses are grounded in the actual audio timeline, not a text approximation of it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-label">WebSocket streaming partial response — <span>real-time format</span></div>
+    <div class="code-block">
+<span class="cm">// WebSocket message: partial transcript</span>
+{
+  <span class="k">"type"</span>: <span class="s">"transcript"</span>,
+  <span class="k">"text"</span>: <span class="s">"I want to upgrade my plan"</span>,
+  <span class="k">"start_seconds"</span>: <span class="n">4.3</span>,
+  <span class="k">"end_seconds"</span>: <span class="n">8.1</span>,
+  <span class="k">"language"</span>: <span class="s">"en"</span>
+}
+
+<span class="cm">// Session state accumulates:</span>
+session_state = [
+  { <span class="k">"segment_id"</span>: <span class="s">"S1"</span>, <span class="k">"start"</span>: <span class="n">0.0</span>, <span class="k">"end"</span>: <span class="n">4.3</span>, <span class="k">"text"</span>: <span class="s">"Hi, I'd like to talk about my account"</span> },
+  { <span class="k">"segment_id"</span>: <span class="s">"S2"</span>, <span class="k">"start"</span>: <span class="n">4.3</span>, <span class="k">"end"</span>: <span class="n">8.1</span>, <span class="k">"text"</span>: <span class="s">"I want to upgrade my plan"</span> },
+  <span class="cm">// ... accumulating in real time</span>
+]
+
+<span class="cm">// Agent response is grounded in timestamped session state:
+"Based on your request at 4.3 seconds — you're currently on the Starter plan..."</span></div>
+
+    <div class="callout">
+      <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p><strong>The key property:</strong> Each partial transcript has a <code style="font-family: var(--font-mono); color: var(--accent-bright);">start_seconds</code> and <code style="font-family: var(--font-mono); color: var(--accent-bright);">end_seconds</code>. The agent can reference specific moments. When it says "at 4.3 seconds," that maps to an actual audio artifact — not a text approximation of what was probably said.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TIMING GRAPHIC -->
+<section style="padding: 80px 20px;">
+  <div class="container">
+    <div class="section-label">The timing difference</div>
+    <h2 class="section-title">Batch vs. streaming — what the timeline looks like.</h2>
+    <p class="section-sub">Batch transcription processes the full audio before returning results. Streaming processes at 4.6× realtime — you're getting partial transcripts before the audio finishes.</p>
+
+    <div class="timing-graphic">
+      <h3>45-second audio file processing comparison</h3>
+
+      <div class="timing-bar">
+        <div class="timing-label">Batch transcription</div>
+        <div class="timing-track">
+          <div class="timing-fill batch"></div>
+        </div>
+        <div class="timing-value batch">~45s (1× realtime)</div>
+      </div>
+
+      <div class="timing-bar">
+        <div class="timing-label">Signal Loom streaming</div>
+        <div class="timing-track">
+          <div class="timing-fill stream"></div>
+        </div>
+        <div class="timing-value stream">~10s (4.6× realtime)</div>
+      </div>
+
+      <div class="timing-note">
+        <strong>What this means for a voice agent:</strong> A 45-second audio chunk — say, a user explaining a problem — is fully transcribed and timestamped in ~10 seconds using streaming, vs. ~45 seconds for batch. The agent has evidence to ground its response before the user finishes speaking. With batch, you're waiting for the full audio to complete before you have any transcript at all.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE EXAMPLE -->
+<section style="padding: 80px 20px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="section-label">Implementation</div>
+    <h2 class="section-title">The streaming implementation in practice.</h2>
+    <p class="section-sub">Signal Loom's WebSocket endpoint delivers timestamped partial transcripts as audio chunks arrive. Here's what the integration looks like.</p>
+
+    <div class="code-label">Python SDK — WebSocket streaming</div>
+    <div class="code-block">
+<span class="k">from</span> signalloom <span class="k">import</span> Client
+<span class="k">import</span> asyncio
+
+client = Client()  <span class="cm"># reads SL_API_KEY from env</span>
+
+<span class="cm"># Real-time streaming from microphone or audio stream</span>
+<span class="k">async for</span> partial <span class="k">in</span> client.stream(audio_chunk_bytes):
+    <span class="cm"># Partial transcript — available before audio chunk finishes</span>
+    print(partial.text)          <span class="cm"># "I want to upgrade my plan"</span>
+    print(partial.start_seconds) <span class="cm"># 4.3</span>
+    print(partial.end_seconds)   <span class="cm"># 8.1</span>
+    print(partial.done)          <span class="cm"># False — segment still in progress</span>
+
+    <span class="cm"># Session state accumulation</span>
+    session_state.append({
+        <span class="k">"segment_id"</span>: partial.segment_id,
+        <span class="k">"start"</span>: partial.start_seconds,
+        <span class="k">"end"</span>: partial.end_seconds,
+        <span class="k">"text"</span>: partial.text
+    })
+
+    <span class="cm"># Agent reasons over timestamped session — not raw text fragments</span>
+    grounded_response = agent.respond(session_state)</div>
+
+    <div class="code-label">Partial transcript format — <span>per WebSocket message</span></div>
+    <div class="code-block">
+{
+  <span class="k">"type"</span>: <span class="s">"transcript"</span>,    <span class="cm">// "transcript" | "final" | "error"</span>
+  <span class="k">"text"</span>: <span class="s">"I want to upgrade..."</span>,
+  <span class="k">"start_seconds"</span>: <span class="n">4.3</span>,
+  <span class="k">"end_seconds"</span>: <span class="n">8.1</span>,
+  <span class="k">"language"</span>: <span class="s">"en"</span>,
+  <span class="k">"done"</span>: <span class="k">false</span>          <span class="cm">// True when segment is finalized</span>
+}</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="section-title">Test the real-time streaming endpoint.<br>See partial results in under 5 seconds.</h2>
+  <p class="section-sub">Free tier includes WebSocket streaming access. 100 structured minutes per month, no credit card. The difference between a grounded voice agent and one hallucinating context is a timestamp.</p>
+  <div class="hero-ctas">
+    <a href="/demo.html" class="btn btn-primary" style="font-size: 16px; padding: 14px 28px;">
+      Test streaming demo →
+    </a>
+    <a href="/signup.html" class="btn btn-secondary" style="font-size: 16px; padding: 14px 28px;">
+      Get free API key
+    </a>
+  </div>
+</section>
+
+<footer>
+  <a href="/">Signal Loom AI</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a>
+  <p style="margin-top: 12px;">Structured intelligence for AI systems — not just a transcript.</p>
+</footer>
+
+<!-- STICKY CTA -->
+<div class="sticky-cta">
+  <p>Voice agents that cite their evidence perform better.</p>
+  <a href="/signup.html" class="btn btn-primary">Start free →</a>
+</div>
+
+</body>
+</html>
