@@ -560,6 +560,29 @@
       <div class="error-msg" id="input-error"></div>
     </div>
 
+    <!-- Format selector -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <span style="font-size:13px;color:var(--text-dim);">Output format:</span>
+      <div style="display:flex;gap:8px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="radio" name="return_format" value="json" checked style="accent-color:var(--accent);">
+          <span style="font-size:13px;color:var(--text-dim);">JSON (SLS)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="radio" name="return_format" value="srt" style="accent-color:var(--accent);">
+          <span style="font-size:13px;color:var(--text-dim);">SRT</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="radio" name="return_format" value="vtt" style="accent-color:var(--accent);">
+          <span style="font-size:13px;color:var(--text-dim);">VTT</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="radio" name="return_format" value="txt" style="accent-color:var(--accent);">
+          <span style="font-size:13px;color:var(--text-dim);">TXT</span>
+        </label>
+      </div>
+    </div>
+
     <!-- Info banner: shown when no API key is found -->
     <div class="info-banner" id="api-key-banner">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -676,6 +699,65 @@
     let currentJobId = null;
     let currentSLS = null;
 
+    // ── PostHog Analytics ─────────────────────────────────────────────────────
+    // Ingest PostHog project key (same phc_ key as the API)
+    const PH_KEY = "phc_fEKKl5IhCNYCb1rLnBigV47oi0aEyWpCOp4HOiCduP2";
+    const PH_HOST = "https://us.i.posthog.com";
+
+    function firePH(event, properties) {
+      try {
+        properties = properties || {};
+        properties["$lib"] = "signalloom-ingest";
+        properties["source"] = "ingest_html";
+        const body = JSON.stringify({
+          api_key: PH_KEY,
+          event: event,
+          properties: properties,
+          distinct_id: getApiKey() || (navigator.userAgent || 'anonymous'),
+          timestamp: new Date().toISOString(),
+        });
+        navigator.sendBeacon && navigator.sendBeacon(PH_HOST + "/batch/", body);
+        // Async fallback
+        fetch(PH_HOST + "/batch/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+          keepalive: true,
+        }).catch(function() {});
+      } catch(e) {}
+    }
+
+    // ── Failure Code → User Message Mapping ─────────────────────────────────
+    const FAILURE_MESSAGES = {
+      NO_API_KEY:       "No API key found. Sign up free to continue.",
+      MONTHLY_LIMIT:    "Monthly limit reached. Upgrade your plan to continue.",
+      QUOTA_EXCEEDED:   "You've hit your usage limit. Upgrade to unlock more.",
+      UNAUTHORIZED:     "Invalid API key. Check your key or sign up for a new one.",
+      FORBIDDEN:        "Access denied. Your plan doesn't support this feature.",
+      NOT_FOUND:        "Job not found. It may have expired.",
+      RATE_LIMITED:     "Too many requests. Please wait a moment and try again.",
+      YOUTUBE_UNAVAILABLE: "YouTube video is unavailable or age-restricted.",
+      YOUTUBE_BLOCKED:  "This YouTube video can't be accessed.",
+      YOUTUBE_RATE_LIMIT: "YouTube rate limit hit. Try again in a few minutes.",
+      INVALID_URL:      "That doesn't look like a valid YouTube URL.",
+      FILE_TOO_LARGE:   "This file is too large for your current plan.",
+      UNSUPPORTED_FORMAT: "This file format isn't supported.",
+    };
+
+    function getFailureMsg(failure_code, httpStatus) {
+      if (failure_code && FAILURE_MESSAGES[failure_code]) {
+        let msg = FAILURE_MESSAGES[failure_code];
+        // Append upgrade link for limit-related failures
+        if (["MONTHLY_LIMIT", "QUOTA_EXCEEDED", "FILE_TOO_LARGE"].includes(failure_code)) {
+          msg += ' <a href="/checkout.html" style="color:var(--accent-bright);">Upgrade →</a>';
+        }
+        return msg;
+      }
+      if (httpStatus === 401) return 'Invalid API key. <a href="/signup.html" style="color:var(--accent-bright);">Get a free key →</a>';
+      if (httpStatus === 429) return 'Rate limited. Please wait a moment and try again.';
+      return null;
+    }
+
     function parseVideoId(url) {
       const patterns = [
         /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([^&\?\/]+)/,
@@ -744,7 +826,10 @@
       if (!videoUrl) { showError('Please enter a YouTube URL.'); return; }
 
       const videoId = parseVideoId(videoUrl);
-      if (!videoId) { showError('That doesn\'t look like a valid YouTube URL.'); return; }
+      if (!videoId) { showError("That doesn't look like a valid YouTube URL."); return; }
+
+      // Get selected format
+      const returnFormat = document.querySelector('input[name="return_format"]:checked')?.value || 'json';
 
       setPlayer(videoUrl);
       setStatus('running', 'Starting…');
@@ -763,6 +848,14 @@
 
       const t0 = Date.now();
 
+      // Fire PostHog: URL submitted
+      firePH("yt_url_submitted", {
+        url: videoUrl,
+        video_id: videoId,
+        return_format: returnFormat,
+        has_api_key: !!getApiKey(),
+      });
+
       try {
         setStatus('running', 'Downloading + transcribing…');
         setStep('step-extract', 'active');
@@ -771,6 +864,7 @@
         // The API downloads via yt-dlp and queues a transcription job
         const formData = new FormData();
         formData.append('url', videoUrl);
+        formData.append('return_format', returnFormat);
 
         const apiKey = getApiKey();
         const headers = {};
@@ -784,7 +878,20 @@
 
         if (!res.ok) {
           const err = await res.json().catch(() => ({ detail: 'Request failed' }));
-          throw new Error(err.detail || `HTTP ${res.status}`);
+          const failure_code = err.failure_code || null;
+          const customMsg = getFailureMsg(failure_code, res.status);
+          if (customMsg) {
+            showError(customMsg);
+          } else {
+            showError(err.detail || `HTTP ${res.status}`);
+          }
+          firePH("yt_job_rejected", {
+            url: videoUrl,
+            http_status: res.status,
+            failure_code: failure_code,
+          });
+          setStatus('error', 'Failed');
+          return;
         }
 
         const job = await res.json();
@@ -799,7 +906,21 @@
         const result = await pollJob(currentJobId, apiKey, 120000);
 
         if (result.status === 'failed') {
-          throw new Error(result.error || 'Transcription failed');
+          const failure_code = result.failure_code || null;
+          const customMsg = getFailureMsg(failure_code, null);
+          if (customMsg) {
+            showError(customMsg);
+          } else {
+            showError(result.error || 'Transcription failed.');
+          }
+          firePH("yt_job_failed", {
+            job_id: currentJobId,
+            url: videoUrl,
+            failure_code: failure_code,
+            elapsed_seconds: parseFloat(((Date.now() - t0) / 1000).toFixed(1)),
+          });
+          setStatus('error', 'Failed');
+          return;
         }
 
         const transcribeElapsed = ((Date.now() - t0) / 1000).toFixed(1);
@@ -817,16 +938,35 @@
         setStep('step-sls', 'done', `◈ ${totalElapsed}s`);
         setStep('step-done', 'done');
         setStatus('ready', 'Complete!');
+
+        // Fire PostHog: job completed
+        firePH("yt_job_completed", {
+          job_id: currentJobId,
+          url: videoUrl,
+          video_id: videoId,
+          return_format: returnFormat,
+          elapsed_seconds: parseFloat(totalElapsed),
+          duration_seconds: slsResult.duration_seconds || null,
+          language: slsResult.language || null,
+        });
         displayOutput(slsResult);
 
       } catch (err) {
         setStatus('error', 'Failed');
         setStep('step-extract', 'failed');
-        let userMsg = err.message || 'Something went wrong. Please try again.';
-        if (err.failure_code) {
-          userMsg = `[${err.failure_code}] ${userMsg}`;
-        }
-        showError(userMsg);
+        const customMsg = err.message && err.message.includes(' ')
+          ? err.message.split(' — ').pop() || err.message
+          : err.message || 'Something went wrong. Please try again.';
+        const failure_code = err.failure_code || null;
+        const finalMsg = getFailureMsg(failure_code, null) || customMsg;
+        showError(finalMsg);
+        firePH("yt_error", {
+          job_id: currentJobId || 'none',
+          url: videoUrl,
+          error: customMsg,
+          failure_code: failure_code,
+          elapsed_seconds: parseFloat(((Date.now() - t0) / 1000).toFixed(1)),
+        });
       } finally {
         btn.disabled = false;
         btn.textContent = 'Transcribe';
