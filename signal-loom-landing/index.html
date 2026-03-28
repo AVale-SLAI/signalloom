@@ -900,6 +900,60 @@
   </div>
 </section>
 
+<!-- YOUTUBE INGEST -->
+<section id="youtube-ingest" style="background: var(--bg-surface);">
+  <div class="container">
+    <div class="section-label">New</div>
+    <h2 class="section-title reveal">YouTube Ingest — now in beta</h2>
+    <p class="section-sub reveal">Turn any public YouTube video into structured, timestamped, speaker-aware transcription in seconds. No download required — just paste the URL.</p>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 48px;" class="reveal">
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <div style="width:36px;height:36px;border-radius:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#EF4444"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.547 4.385 8.817 3.603.246 11.626.246 15.23 0C23.512 20.55 23.97 18.196 24 12c-.03-6.185-.484-8.547-4.385-8.816zM9 16V8l8 3.993L9 16z"/></svg>
+          </div>
+          <span style="font-size:15px; font-weight:600;">YouTube → Signal Loom Schema</span>
+        </div>
+        <p style="font-size:14px; color: var(--text-secondary); line-height:1.65; margin-bottom:16px;">Paste any public YouTube URL. Signal Loom downloads the audio via yt-dlp, transcribes it with Whisper, and returns structured JSON — speakers, topics, entities, timestamps.</p>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+          <li style="font-size:13px; color: var(--text-secondary); display:flex; align-items:center; gap:8px;">
+            <span style="color:var(--green);">✓</span> Speaker diarization
+          </li>
+          <li style="font-size:13px; color: var(--text-secondary); display:flex; align-items:center; gap:8px;">
+            <span style="color:var(--green);">✓</span> Timestamped segments
+          </li>
+          <li style="font-size:13px; color: var(--text-secondary); display:flex; align-items:center; gap:8px;">
+            <span style="color:var(--green);">✓</span> Entity & topic extraction
+          </li>
+          <li style="font-size:13px; color: var(--text-secondary); display:flex; align-items:center; gap:8px;">
+            <span style="color:var(--green);">✓</span> SRT/VTT subtitle export
+          </li>
+        </ul>
+      </div>
+      <div style="background: #0d0b16; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; overflow-x: auto;">
+        <div style="color: var(--text-muted); font-size: 11px; margin-bottom: 12px;">// One request. That's it.</div>
+        <div><span style="color:var(--accent-bright)">$</span> <span style="color:var(--text-primary)">curl -X POST https://api.signalloomai.com/v1/transcribe \</span></div>
+        <div style="padding-left: 20px;"><span style="color:var(--text-primary)">-H "Authorization: Bearer $SL_API_KEY" \</span></div>
+        <div style="padding-left: 20px;"><span style="color:var(--text-primary)">-F "url=https://youtube.com/watch?v=..."</span></div>
+        <div style="margin-top: 12px;"><span style="color:var(--text-muted)">→</span> <span style="color:var(--green)">{"status": "queued", "job_id": "..."}</span></div>
+        <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px;">
+          <div style="color: var(--text-muted); font-size: 11px; margin-bottom: 8px;">// Poll for result</div>
+          <div><span style="color:var(--accent-bright)">$</span> <span style="color:var(--text-primary)">GET /v1/status/{job_id}</span></div>
+          <div style="margin-top: 8px;"><span style="color:var(--text-muted)">→</span> <span style="color:var(--green)">{"status": "completed", ...}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px; text-align: center;" class="reveal">
+      <a href="/ingest.html" class="btn btn-primary" style="display:inline-flex; align-items:center; gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.547 4.385 8.817 3.603.246 11.626.246 15.23 0C23.512 20.55 23.97 18.196 24 12c-.03-6.185-.484-8.547-4.385-8.816zM9 16V8l8 3.993L9 16z"/></svg>
+        Try YouTube Ingest free →
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- WHO IT'S FOR -->
 <section class="who-section" id="who">
   <div class="container">
