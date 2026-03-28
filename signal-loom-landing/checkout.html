@@ -303,18 +303,18 @@
     const cancelUrl = encodeURIComponent(window.location.href);
 
     try {
+      const formData = new URLSearchParams();
+      formData.append('tier', plan);
+      formData.append('api_key_id', keyId);
+      formData.append('success_url', window.location.origin + '/account.html?upgraded=' + plan);
+      formData.append('cancel_url', cancelUrl);
+
       const res = await fetch(API_BASE + '/v1/stripe/checkout', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + apiKey
         },
-        body: JSON.stringify({
-          plan: plan,
-          api_key_id: keyId,
-          success_url: window.location.origin + '/account.html?upgraded=' + plan,
-          cancel_url: cancelUrl,
-        }),
+        body: formData,
       });
 
       const data = await res.json();
