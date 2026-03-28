@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Ingest — Signal Loom AI</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a25;
+      --border: #222230;
+      --accent: #5B8DF9;
+      --accent-bright: #7BA8FF;
+      --accent-dim: #3A5DB5;
+      --success: #22C55E;
+      --error: #EF4444;
+      --text: #E2E8F0;
+      --text-dim: #64748B;
+      --text-muted: #334155;
+      --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', ui-monospace, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-brand span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); }
+
+    /* Hero */
+    .hero {
+      padding: 72px 32px 48px;
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(91,141,249,0.1);
+      border: 1px solid rgba(91,141,249,0.25);
+      color: var(--accent-bright);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero p {
+      font-size: 17px;
+      color: var(--text-dim);
+      line-height: 1.65;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* Main container */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      width: 100%;
+    }
+
+    /* URL Input Card */
+    .url-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .url-card label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+    .url-row {
+      display: flex;
+      gap: 10px;
+    }
+    .url-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-family: var(--font-mono);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .url-input:focus { border-color: var(--accent-dim); }
+    .url-input::placeholder { color: var(--text-muted); }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--accent-bright); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Player + Status layout */
+    .stage-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 680px) {
+      .stage-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Player card */
+    .player-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .player-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .player-body {
+      position: relative;
+      aspect-ratio: 16/9;
+      background: #000;
+    }
+    .player-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .player-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .player-placeholder svg { opacity: 0.4; }
+
+    /* Status card */
+    .status-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .status-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .status-dot.ready { background: var(--success); }
+    .status-dot.running { background: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
+    .status-dot.error { background: var(--error); }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .status-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .status-steps {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--bg);
+      transition: all 0.3s;
+    }
+    .step.active {
+      background: rgba(91,141,249,0.08);
+      color: var(--text);
+    }
+    .step.done {
+      color: var(--success);
+    }
+    .step.failed { color: var(--error); }
+    .step-icon { font-size: 14px; width: 18px; text-align: center; }
+    .step-time {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Output card */
+    .output-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .output-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .output-header h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .output-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(91,141,249,0.12);
+      color: var(--accent-bright);
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-family: var(--font-mono);
+    }
+    .output-body {
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      max-height: 480px;
+      overflow-y: auto;
+      color: var(--text-dim);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .output-body::-webkit-scrollbar { width: 6px; }
+    .output-body::-webkit-scrollbar-track { background: transparent; }
+    .output-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .output-body::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* Copy button */
+    .copy-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { background: var(--border); color: var(--text); }
+
+    /* Schema highlight */
+    .schema-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .schema-section h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+    .schema-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .schema-field {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .schema-field .key {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .schema-field .val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* CTA */
+    .cta-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .cta-strip h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .cta-strip p {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      border-radius: 10px;
+      padding: 11px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-outline:hover { background: rgba(91,141,249,0.08); }
+
+    /* Error state */
+    .error-msg {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--error);
+      font-size: 14px;
+      margin-top: 12px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 24px 32px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#5B8DF9"/>
+        <path d="M8 10h16M8 16h10M8 22h12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="24" cy="22" r="4" fill="#22C55E"/>
+      </svg>
+      Signal Loom <span>AI</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/pricing.html">Pricing</a></li>
+      <li><a href="/demo.html">Demo</a></li>
+      <li><a href="/ingest.html" class="active">YouTube</a></li>
+      <li><a href="mailto:hello@signalloomai.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.547 4.385 8.817 3.603.246 11.626.246 15.23 0C23.512 20.55 23.97 18.196 24 12c-.03-6.185-.484-8.547-4.385-8.816zM9 16V8l8 3.993L9 16z"/></svg>
+      YouTube Ingest
+    </div>
+    <h1>Turn any YouTube video into a <em>machine-readable knowledge object</em></h1>
+    <p>Paste a URL. Get structured, timestamped, speaker-aware transcription — not a raw transcript. Built on Signal Loom Schema. No account required to try.</p>
+  </section>
+
+  <div class="container">
+    <!-- URL Input -->
+    <div class="url-card">
+      <label for="youtube-url">YouTube Video URL</label>
+      <div class="url-row">
+        <input
+          class="url-input"
+          type="url"
+          id="youtube-url"
+          placeholder="https://www.youtube.com/watch?v=..."
+          autocomplete="off"
+        />
+        <button class="btn-primary" id="transcribe-btn" onclick="handleTranscribe()">
+          Transcribe
+        </button>
+      </div>
+      <div class="error-msg" id="input-error"></div>
+    </div>
+
+    <!-- Player + Status -->
+    <div class="stage-grid">
+      <div class="player-card">
+        <div class="player-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.547 4.385 8.817 3.603.246 11.626.246 15.23 0C23.512 20.55 23.97 18.196 24 12c-.03-6.185-.484-8.547-4.385-8.816zM9 16V8l8 3.993L9 16z"/></svg>
+          Video Preview
+        </div>
+        <div class="player-body" id="player-body">
+          <div class="player-placeholder" id="player-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.547 4.385 8.817 3.603.246 11.626.246 15.23 0C23.512 20.55 23.97 18.196 24 12c-.03-6.185-.484-8.547-4.385-8.816zM9 16V8l8 3.993L9 16z"/></svg>
+            Paste a YouTube URL above
+          </div>
+          <iframe id="youtube-player" style="display:none" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <div class="status-card">
+        <div class="status-header">
+          <div class="status-dot" id="status-dot"></div>
+          <div class="status-label" id="status-label">Ready</div>
+        </div>
+        <div class="status-steps">
+          <div class="step" id="step-url">
+            <span class="step-icon">→</span>
+            <span>Input received</span>
+          </div>
+          <div class="step" id="step-extract">
+            <span class="step-icon">↓</span>
+            <span>Extracting audio</span>
+            <span class="step-time" id="step-extract-time"></span>
+          </div>
+          <div class="step" id="step-transcribe">
+            <span class="step-icon">◈</span>
+            <span>Transcribing</span>
+            <span class="step-time" id="step-transcribe-time"></span>
+          </div>
+          <div class="step" id="step-sls">
+            <span class="step-icon">◈</span>
+            <span>Structuring output</span>
+            <span class="step-time" id="step-sls-time"></span>
+          </div>
+          <div class="step" id="step-done">
+            <span class="step-icon">✓</span>
+            <span>Done — structured output ready</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Structured Output -->
+    <div class="output-card" id="output-card" style="display:none">
+      <div class="output-header">
+        <h3>Signal Loom Schema Output</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="output-badge">SLS v1</span>
+          <button class="copy-btn" onclick="copyOutput()">Copy</button>
+        </div>
+      </div>
+      <div class="output-body" id="output-body"></div>
+    </div>
+
+    <!-- Schema Fields Summary -->
+    <div class="schema-section" id="schema-section" style="display:none">
+      <h4>Schema Dimensions — Signal Loom Schema (SLS)</h4>
+      <div class="schema-fields" id="schema-fields"></div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-strip">
+      <div>
+        <h3>Ready to build with the full API?</h3>
+        <p>Get an API key and integrate SLS-structured transcription into your workflow.</p>
+      </div>
+      <a href="/signup.html" class="btn-outline">Get API Key →</a>
+    </div>
+  </div>
+
+  <footer>
+    <a href="/">Signal Loom AI</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
+    · Built on Signal Loom Schema
+  </footer>
+
+  <script>
+    const API_BASE = "https://api.signalloomai.com";
+    let currentJobId = null;
+    let currentSLS = null;
+
+    function parseVideoId(url) {
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([^&\?\/]+)/,
+        /^([a-zA-Z0-9_-]{11})$/
+      ];
+      for (const p of patterns) {
+        const m = url.match(p);
+        if (m) return m[1];
+      }
+      return null;
+    }
+
+    function setPlayer(url) {
+      const videoId = parseVideoId(url);
+      const player = document.getElementById('youtube-player');
+      const placeholder = document.getElementById('player-placeholder');
+      if (videoId) {
+        player.src = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+        player.style.display = 'block';
+        placeholder.style.display = 'none';
+      } else {
+        player.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }
+    }
+
+    function setStatus(state, label) {
+      const dot = document.getElementById('status-dot');
+      const labelEl = document.getElementById('status-label');
+      dot.className = 'status-dot ' + (state || '');
+      labelEl.textContent = label || 'Ready';
+    }
+
+    function setStep(id, state, timeStr) {
+      const el = document.getElementById(id);
+      el.className = 'step ' + (state || '');
+      if (timeStr && document.getElementById(id + '-time')) {
+        document.getElementById(id + '-time').textContent = timeStr;
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('input-error');
+      el.textContent = msg;
+      el.classList.add('visible');
+    }
+    function hideError() {
+      document.getElementById('input-error').classList.remove('visible');
+    }
+
+    function formatTime(seconds) {
+      if (!seconds) return null;
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function formatSeconds(seconds) {
+      if (!seconds) return '';
+      return `${seconds.toFixed(1)}s`;
+    }
+
+    async function handleTranscribe() {
+      hideError();
+      const videoUrl = document.getElementById('youtube-url').value.trim();
+      if (!videoUrl) { showError('Please enter a YouTube URL.'); return; }
+
+      const videoId = parseVideoId(videoUrl);
+      if (!videoId) { showError('That doesn\'t look like a valid YouTube URL.'); return; }
+
+      setPlayer(videoUrl);
+      setStatus('running', 'Starting…');
+      setStep('step-url', 'done');
+      setStep('step-extract', 'active');
+      setStep('step-transcribe', '');
+      setStep('step-sls', '');
+      setStep('step-done', '');
+
+      document.getElementById('output-card').style.display = 'none';
+      document.getElementById('schema-section').style.display = 'none';
+
+      const btn = document.getElementById('transcribe-btn');
+      btn.disabled = true;
+      btn.textContent = 'Transcribing…';
+
+      const t0 = Date.now();
+
+      try {
+        setStatus('running', 'Downloading + transcribing…');
+        setStep('step-extract', 'active');
+
+        // Submit YouTube URL directly to the transcription API
+        // The API downloads via yt-dlp and queues a transcription job
+        const formData = new FormData();
+        formData.append('url', videoUrl);
+
+        const apiKey = getApiKey();
+        const headers = {};
+        if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
+        const res = await fetch(`${API_BASE}/v1/transcribe`, {
+          method: 'POST',
+          headers,
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: 'Request failed' }));
+          throw new Error(err.detail || `HTTP ${res.status}`);
+        }
+
+        const job = await res.json();
+        currentJobId = job.job_id;
+
+        const extractElapsed = ((Date.now() - t0) / 1000).toFixed(1);
+        setStep('step-extract', 'done', `↓ ${extractElapsed}s`);
+        setStep('step-transcribe', 'active');
+        setStatus('running', 'Transcribing…');
+
+        // Poll for completion
+        const result = await pollJob(currentJobId, apiKey, 120000);
+
+        if (result.status === 'failed') {
+          throw new Error(result.error || 'Transcription failed');
+        }
+
+        const transcribeElapsed = ((Date.now() - t0) / 1000).toFixed(1);
+        setStep('step-transcribe', 'done', `◈ ${transcribeElapsed}s`);
+        setStep('step-sls', 'active');
+
+        // Fetch the structured result
+        const resultRes = await fetch(`${API_BASE}/v1/result/${currentJobId}`, {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+        const slsResult = await resultRes.json();
+        currentSLS = slsResult;
+
+        const totalElapsed = ((Date.now() - t0) / 1000).toFixed(1);
+        setStep('step-sls', 'done', `◈ ${totalElapsed}s`);
+        setStep('step-done', 'done');
+        setStatus('ready', 'Complete!');
+        displayOutput(slsResult);
+
+      } catch (err) {
+        setStatus('error', 'Failed');
+        setStep('step-extract', 'failed');
+        showError(err.message || 'Something went wrong. Please try again.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Transcribe';
+      }
+    }
+
+    async function pollJob(jobId, apiKey, maxWaitMs) {
+      const start = Date.now();
+      const interval = 3000;
+
+      while (Date.now() - start < maxWaitMs) {
+        await sleep(interval);
+        try {
+          const res = await fetch(`${API_BASE}/v1/status/${jobId}`, {
+            headers: { 'Authorization': `Bearer ${apiKey}` }
+          });
+          const status = await res.json();
+          if (status.status === 'completed') return status;
+          if (status.status === 'failed') return { status: 'failed', error: status.error };
+        } catch (e) {
+          // Continue polling
+        }
+      }
+      return { status: 'timeout', error: 'Job timed out' };
+    }
+
+    function buildDemoSLS(fileInfo, url) {
+      // Real output — demonstrates what a real transcription would return in SLS format
+      return {
+        schema: "Signal Loom Schema v1",
+        schema_url: "https://signalloomai.com/schema",
+        source_ref: url,
+        source_kind: "youtube_url",
+        media_kind: "audio",
+        language: "en",
+        model: "mlx-community/whisper-large-v3-turbo",
+        created_at: new Date().toISOString(),
+        duration_seconds: fileInfo.duration_seconds || 213,
+        normalized_text: "[Transcription would appear here — connect an API key for live results]",
+        text: "[Transcription would appear here — connect an API key for live results]",
+        segments: [],
+        metadata: {
+          platform: "youtube",
+          video_id: parseVideoId(url),
+          extraction_time_seconds: (fileInfo.duration_seconds || 0) * 0.023,
+          format: "m4a",
+          schema_dimensions: [
+            { dimension: "temporal", description: "timestamped segments with start/end seconds" },
+            { dimension: "speaker", description: "speaker labels when diarization is enabled" },
+            { dimension: "semantic", description: "topic tags and entity extraction" },
+            { dimension: "provenance", description: "source reference + platform metadata" }
+          ]
+        }
+      };
+    }
+
+    async function pollTranscription(jobId) {
+      const maxWait = 120000;
+      const interval = 3000;
+      const t0 = Date.now();
+
+      while (Date.now() - t0 < maxWait) {
+        const res = await fetch(`${YOUTUBE_API}/v1/status/${jobId}`, {
+          headers: { 'Authorization': 'Bearer ' + getApiKey() }
+        });
+        const status = await res.json();
+        if (status.status === 'completed') return status;
+        if (status.status === 'failed') throw new Error(status.error || 'Transcription failed');
+        await sleep(interval);
+      }
+      throw new Error('Transcription timed out');
+    }
+
+    function getApiKey() {
+      return localStorage.getItem('sl_api_key') || '';
+    }
+
+    function displayOutput(sls) {
+      const card = document.getElementById('output-card');
+      const body = document.getElementById('output-body');
+      const schemaSection = document.getElementById('schema-section');
+      const schemaFields = document.getElementById('schema-fields');
+
+      body.textContent = JSON.stringify(sls, null, 2);
+      card.style.display = 'block';
+
+      // Show schema dimensions
+      const dims = (sls.metadata && sls.metadata.schema_dimensions) || [];
+      if (dims.length) {
+        schemaFields.innerHTML = dims.map(d => `
+          <div class="schema-field">
+            <div class="key">${d.dimension}</div>
+            <div class="val">${d.description}</div>
+          </div>
+        `).join('');
+        schemaSection.style.display = 'block';
+      }
+    }
+
+    function copyOutput() {
+      if (!currentSLS) return;
+      navigator.clipboard.writeText(JSON.stringify(currentSLS, null, 2)).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      });
+    }
+
+    function sleep(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    // On page load: check for API key in localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      const key = getApiKey();
+      if (key) {
+        // API key available — would use live transcription
+      }
+    });
+  </script>
+</body>
+</html>
