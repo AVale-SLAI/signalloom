@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Account — Signal Loom AI</title>
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a25;
+      --border: #222230; --accent: #5B8DF9; --accent-bright: #7BA8FF;
+      --success: #22C55E; --error: #EF4444; --warning: #f59e0b;
+      --text: #E2E8F0; --text-dim: #64748B; --text-muted: #334155;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; padding: 40px 20px; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 32px; border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100; max-width: 860px; margin: 0 auto 40px;
+      border-radius: 12px 12px 0 0;
+    }
+    .nav-brand { font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .nav-brand span { color: var(--accent); }
+
+    .container { max-width: 640px; margin: 0 auto; }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px 28px; margin-bottom: 16px;
+    }
+    .card h2 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+
+    .field { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .field:last-child { border-bottom: none; }
+    .field-label { font-size: 13px; color: var(--text-dim); }
+    .field-value { font-size: 13px; font-family: var(--font-mono); color: var(--text); text-align: right; max-width: 60%; word-break: break-all; }
+
+    .tier-badge {
+      display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px;
+      border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .tier-free { background: rgba(91,141,249,0.12); color: var(--accent-bright); }
+    .tier-starter { background: rgba(34,197,94,0.12); color: var(--success); }
+    .tier-pro { background: rgba(245,158,11,0.12); color: var(--warning); }
+    .tier-enterprise { background: rgba(239,68,68,0.12); color: var(--error); }
+
+    .api-key-display {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 14px;
+      font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+      word-break: break-all; position: relative;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 10px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 12px; font-size: 11px; font-weight: 600;
+      color: var(--text-dim); cursor: pointer; transition: all 0.2s;
+    }
+    .copy-btn:hover { background: var(--border); color: var(--text); }
+
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: 10px; padding: 11px 20px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border: none; }
+    .btn-primary:hover { background: var(--accent-bright); }
+    .btn-outline { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
+    .btn-outline:hover { background: rgba(91,141,249,0.08); }
+
+    .error-banner {
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px; padding: 14px 18px; color: var(--error);
+      font-size: 14px; margin-bottom: 16px; display: none;
+    }
+    .error-banner.visible { display: block; }
+
+    .no-key-banner {
+      background: rgba(91,141,249,0.08); border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 10px; padding: 20px 24px; text-align: center;
+    }
+    .no-key-banner p { color: var(--text-dim); font-size: 14px; margin-bottom: 16px; }
+    .no-key-banner a { color: var(--accent-bright); text-decoration: none; font-weight: 600; }
+    .no-key-banner a:hover { text-decoration: underline; }
+
+    .usage-bar-wrap { margin-top: 12px; }
+    .usage-bar-bg { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+    .usage-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s; }
+    .usage-bar-fill.warning { background: var(--warning); }
+    .usage-bar-fill.full { background: var(--error); }
+    .usage-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: var(--font-mono); }
+
+    footer { text-align: center; padding: 32px 20px; font-size: 12px; color: var(--text-muted); }
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">Signal Loom <span>AI</span></a>
+  <a href="/" style="color:var(--text-dim);font-size:14px;text-decoration:none;">← Home</a>
+</nav>
+
+<div class="container">
+  <div class="error-banner" id="error-banner"></div>
+
+  <!-- No API key state -->
+  <div class="no-key-banner" id="no-key" style="display:none;">
+    <p>No API key found in your browser.<br><a href="/signup.html">Sign up free</a> to get one.</p>
+    <a href="/signup.html" class="btn btn-primary">Get API Key →</a>
+  </div>
+
+  <!-- Account info -->
+  <div id="account-content" style="display:none;">
+    <div class="card">
+      <h2>Your Plan</h2>
+      <div class="field">
+        <span class="field-label">Plan</span>
+        <span class="field-value"><span class="tier-badge" id="tier-badge">—</span></span>
+      </div>
+      <div class="field">
+        <span class="field-label">Email</span>
+        <span class="field-value" id="email">—</span>
+      </div>
+      <div class="field">
+        <span class="field-label">Monthly minutes</span>
+        <span class="field-value" id="usage-display">—</span>
+      </div>
+      <div class="usage-bar-wrap" id="usage-bar-wrap" style="display:none;">
+        <div class="usage-bar-bg"><div class="usage-bar-fill" id="usage-bar"></div></div>
+        <div class="usage-label"><span id="usage-used">0 min used</span><span id="usage-limit">0 min limit</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Your API Key</h2>
+      <div style="position:relative; margin-bottom: 16px;">
+        <div class="api-key-display" id="api-key-display">—</div>
+        <button class="copy-btn" id="copy-btn" onclick="copyKey()">Copy</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);">Keep this key private. It provides full access to your account's transcription quota.</p>
+    </div>
+
+    <div class="card">
+      <h2>Billing &amp; Plan Management</h2>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Manage your subscription, view invoices, update payment method, or cancel — directly through Stripe's secure portal.</p>
+      <div class="actions">
+        <button class="btn btn-outline" id="portal-btn" onclick="openPortal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Manage Billing →
+        </button>
+        <a href="/pricing.html" class="btn btn-outline">
+          View Plans →
+        </a>
+      </div>
+      <div id="portal-loading" style="display:none;font-size:13px;color:var(--text-muted);margin-top:12px;">
+        Opening Stripe portal…
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Signal Loom AI</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
+</footer>
+
+<script>
+  const API_BASE = "https://api.signalloomai.com";
+
+  function getApiKey() {
+    try { return localStorage.getItem('sl_api_key') || ''; } catch(e) { return ''; }
+  }
+
+  function getKeyId(key) {
+    // key_id is the first segment before the second underscore
+    // Format: slo_<key_id>_<rest>
+    if (!key) return '';
+    const parts = key.split('_');
+    if (parts.length >= 3) return parts[0] + '_' + parts[1];
+    return parts[0] + '_' + (parts[1] || '');
+  }
+
+  async function loadAccount() {
+    const key = getApiKey();
+    if (!key) {
+      document.getElementById('no-key').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('api-key-display').textContent = key;
+    document.getElementById('account-content').style.display = 'block';
+
+    const keyId = getKeyId(key);
+    if (!keyId) {
+      document.getElementById('no-key').style.display = 'block';
+      document.getElementById('account-content').style.display = 'none';
+      return;
+    }
+
+    try {
+      const res = await fetch(API_BASE + '/v1/account?api_key_id=' + encodeURIComponent(keyId));
+      if (!res.ok) throw new Error('Account not found');
+      const data = await res.json();
+      renderAccount(data, key);
+    } catch(e) {
+      // Show account UI but with limited info
+      document.getElementById('email').textContent = '—';
+      document.getElementById('tier-badge').textContent = '—';
+      document.getElementById('usage-display').textContent = '—';
+    }
+  }
+
+  function renderAccount(data, fullKey) {
+    const tierMap = {
+      'free': { label: 'Free', cls: 'tier-free' },
+      'starter': { label: 'Starter', cls: 'tier-starter' },
+      'pro': { label: 'Pro', cls: 'tier-pro' },
+      'scale': { label: 'Scale', cls: 'tier-pro' },
+      'enterprise': { label: 'Enterprise', cls: 'tier-enterprise' },
+    };
+    const tier = data.tier || 'free';
+    const tierInfo = tierMap[tier.toLowerCase()] || tierMap['free'];
+
+    document.getElementById('tier-badge').textContent = tierInfo.label;
+    document.getElementById('tier-badge').className = 'tier-badge ' + tierInfo.cls;
+    document.getElementById('email').textContent = data.email || '—';
+    document.getElementById('api-key-display').textContent = fullKey;
+
+    // Show usage (if available from /v1/limits)
+    loadUsage();
+  }
+
+  async function loadUsage() {
+    const key = getApiKey();
+    if (!key) return;
+    const keyId = getKeyId(key);
+    try {
+      const res = await fetch(API_BASE + '/v1/limits', {
+        headers: { 'Authorization': 'Bearer ' + key }
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const used = data.usage_minutes || 0;
+      const limit = data.limit_minutes || 0;
+      const pct = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
+      document.getElementById('usage-display').textContent = used + ' / ' + limit + ' min this month';
+      document.getElementById('usage-bar-wrap').style.display = 'block';
+      document.getElementById('usage-used').textContent = used + ' min used';
+      document.getElementById('usage-limit').textContent = limit + ' min limit';
+      const bar = document.getElementById('usage-bar');
+      bar.style.width = pct + '%';
+      bar.className = 'usage-bar-fill' + (pct > 90 ? ' full' : pct > 70 ? ' warning' : '');
+    } catch(e) {}
+  }
+
+  async function openPortal() {
+    const key = getApiKey();
+    if (!key) {
+      alert('No API key found. Please sign up first.');
+      return;
+    }
+    const keyId = getKeyId(key);
+    const btn = document.getElementById('portal-btn');
+    const loading = document.getElementById('portal-loading');
+    btn.disabled = true;
+    loading.style.display = 'block';
+
+    try {
+      const returnUrl = window.location.origin + '/account.html';
+      const res = await fetch(API_BASE + '/v1/stripe/portal?api_key_id=' + encodeURIComponent(keyId) + '&return_url=' + encodeURIComponent(returnUrl));
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: 'Failed to open portal' }));
+        throw new Error(err.detail || 'Portal unavailable');
+      }
+      const data = await res.json();
+      if (data.portal_url) {
+        window.location.href = data.portal_url;
+      } else {
+        throw new Error('No portal URL returned');
+      }
+    } catch(e) {
+      loading.textContent = 'Could not open billing portal: ' + e.message;
+      loading.style.color = 'var(--error)';
+      btn.disabled = false;
+    }
+  }
+
+  function copyKey() {
+    const key = getApiKey();
+    if (!key) return;
+    navigator.clipboard.writeText(key).then(function() {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+    });
+  }
+
+  loadAccount();
+</script>
+</body>
+</html>
