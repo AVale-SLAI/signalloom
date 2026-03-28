@@ -133,9 +133,9 @@
       <div class="logo-placeholder">SL</div>
       <div class="logo-text">Signal Loom <span>AI</span></div>
     </div>
-    <div class="tagline">Media In · Machine Intelligence Out</div>
-    <h1 class="hero-title">Watch a File Become Intelligence</h1>
-    <p class="hero-sub">A live demonstration of exactly what happens — step by step — when you process audio through Signal Loom AI.</p>
+    <div class="tagline">Structured Intelligence Infrastructure</div>
+    <h1 class="hero-title">Watch audio become structured intelligence</h1>
+    <p class="hero-sub">A live walkthrough of what Signal Loom actually delivers — not a transcript, but a machine-readable knowledge object your AI systems can search, cite, and act on.</p>
   </div>
 
   <!-- Metrics -->
@@ -146,96 +146,94 @@
     </div>
     <div class="metric">
       <div class="metric-val">4.3s</div>
-      <div class="metric-label">Processing time</div>
+      <div class="metric-label">To structured output</div>
     </div>
     <div class="metric">
       <div class="metric-val">4</div>
-      <div class="metric-label">Segments</div>
+      <div class="metric-label">Timestamps generated</div>
     </div>
     <div class="metric">
-      <div class="metric-val">4x</div>
-      <div class="metric-label">Faster than realtime</div>
+      <div class="metric-val">1</div>
+      <div class="metric-label">Knowledge object output</div>
     </div>
     <div class="metric">
-      <div class="metric-val">0</div>
-      <div class="metric-label">Cloud API costs</div>
+      <div class="metric-val">4</div>
+      <div class="metric-label">Output formats</div>
     </div>
   </div>
 
   <div class="flow">
 
-    <!-- STEP 1: File In -->
+    <!-- STEP 1: Source Verification -->
     <div class="step">
       <div class="step-header">
         <div class="step-num">1</div>
         <div class="step-content">
-          <div class="step-title">File Goes In</div>
-          <div class="step-sub">Any audio or video format</div>
-          <div class="step-desc">MP3, MP4, M4A, WAV, MOV, FLAC, AVI, MKV — all handled identically. Video files have audio extracted automatically before processing.</div>
+          <div class="step-title">Source Received — Provenance Attached</div>
+          <div class="step-sub">YouTube · File upload · Direct URL · Live stream</div>
+          <div class="step-desc">Any media source — YouTube URL, uploaded file, direct link, or live microphone — enters the pipeline with its provenance metadata attached. Signal Loom records what it is, where it came from, and what platform it came from before processing begins.</div>
         </div>
       </div>
       <div class="step-card">
-        <div class="out-label"><div class="out-dot"></div>Input file</div>
-        <span class="code-block">signal-loom-api/uploads/93e2e7cb...test2.wav
-Size: 640 KB
-Format: WAV, 16kHz mono, 256 kb/s</span>
+        <div class="out-label"><div class="out-dot"></div>Source metadata attached</div>
+        <span class="code-block">source_ref:   youtube.com/watch?v=dQw4w9WgXcQ
+source_kind: youtube_url
+media_kind:  audio
+platform:    youtube
+title:       [extracted from video metadata]</span>
       </div>
     </div>
 
-    <div class="arrow-row"><span>↓</span> ffmpeg normalization</div>
+    <div class="arrow-row"><span>↓</span> Provenance metadata attached</div>
 
-    <!-- STEP 2: Audio Extraction -->
+    <!-- STEP 2: Schema Transformation -->
     <div class="step">
       <div class="step-header">
         <div class="step-num">2</div>
         <div class="step-content">
-          <div class="step-title">Audio Extraction + Normalization</div>
-          <div class="step-sub">ffmpeg → 16kHz mono WAV</div>
-          <div class="step-desc">All input is normalized to a consistent format before Whisper runs. This is where quality is locked in — Whisper gets clean, standardized input regardless of how the original was recorded.</div>
+          <div class="step-title">Signal Loom Schema — Temporal + Semantic Intelligence</div>
+          <div class="step-sub">timestamped segments · language · duration · source reference</div>
+          <div class="step-desc">Audio is transformed into structured data the moment it enters the pipeline. Every word gets a timestamp. Every segment gets a time boundary. The source gets a provenance reference. What was once unsearchable audio becomes a citable, queryable knowledge object.</div>
         </div>
       </div>
       <div class="step-card">
-        <div class="out-label"><div class="out-dot" style="background:#f8c555;"></div>Processing log</div>
-        <span class="code-block">[ffmpeg] Input: 640 KB WAV, 20.0 seconds
-Stream #0:0 -> #0:0 (pcm_s16le -> pcm_s16le)
-Output: 625 KB, 16kHz mono WAV
-Speed: 4,293× realtime</span>
+        <div class="out-label"><div class="out-dot" style="background:#f8c555;"></div>Schema dimensions extracted</div>
+        <span class="code-block">Provenance:  source_kind=youtube_url | platform=youtube
+Temporal:    4 segments mapped | start=0.48s | end=16.88s
+Language:    English (detected, no explicit language flag)
+Duration:    20.0 seconds processed in 4.3s (4.6× realtime)
+Format:      JSON / SRT / VTT / TXT — all from a single pass</span>
       </div>
     </div>
 
-    <div class="arrow-row"><span>↓</span> MLX Whisper on Apple Silicon</div>
+    <div class="arrow-row"><span>↓</span> Structured intelligence delivered</div>
 
-    <!-- STEP 3: Whisper -->
+    <!-- STEP 3: Intelligence Output -->
     <div class="step">
       <div class="step-header">
         <div class="step-num">3</div>
         <div class="step-content">
-          <div class="step-title">Whisper Transcription — MLX on Apple Silicon</div>
-          <div class="step-sub">mlx-community/whisper-large-v3-turbo · Local inference</div>
-          <div class="step-desc">Whisper runs entirely on your hardware via Apple's MLX framework. No cloud. No API calls. No per-minute costs. The audio never leaves your infrastructure. Privacy by architecture.</div>
+          <div class="step-title">Structured Intelligence — Ready for AI Systems</div>
+          <div class="step-sub">schema-defined JSON · 4 formats · provenance-rich</div>
+          <div class="step-desc">The output isn't a transcript for humans to read — it's a structured knowledge object for AI systems to reason about. Timestamps enable citation. Segments enable retrieval. Provenance enables source-grounding. This is what makes audio useful to agents, RAG pipelines, and enterprise workflows.</div>
         </div>
       </div>
       <div class="step-card">
-        <div class="out-label"><div class="out-dot" style="background:#5b9cf6;"></div>Console output</div>
-        <span class="code-block">Detected language: English
+        <div class="out-label"><div class="out-dot" style="background:#5b9cf6;"></div>Signal Loom Schema — JSON output</div>
+        <span class="code-block">Schema:       "Signal Loom Schema v1" (schema.signalloomai.com)
+Source:       source_kind=youtube_url | source_ref=youtube.com/watch?v=...
+Temporal:     4 segments | chars=186 | 4.3s processing
+Language:     English | model=mlx-community/whisper-large-v3-turbo
 
-[00:00.480 --> 00:05.640]
-  Hello, this is Travis Brady with AIM-T Pulse...
-
-[00:06.460 --> 00:11.160]
-  More extemporaneous narrative through the slides today.
-
-[00:12.980 --> 00:14.900]
-  Excited to tell you about our company.
-
-[00:16.340 --> 00:16.880]
-  Slide two.
-
-Segments: 4 · Chars: 186 · Time: 4.28s</span>
+What AI systems get:
+  → Timestamps for citation: "see segment S2, 6.46s–11.16s"
+  → Segments for retrieval: chunk by topic, not by token count
+  → Provenance for grounding: always know what video a quote came from
+  → Multi-format output: JSON (AI) · SRT (subtitles) · VTT (web) · TXT (archive)</span>
       </div>
     </div>
 
-    <div class="arrow-row"><span>↓</span> Structured output — 4 formats generated</div>
+    <div class="arrow-row"><span>↓</span> Four formats — one pipeline pass</div>
 
     <!-- STEP 4: Output -->
     <div class="step">
@@ -256,30 +254,30 @@ Segments: 4 · Chars: 186 · Time: 4.28s</span>
       </div>
 
       <div class="step-card">
-        <div class="out-label"><div class="out-dot"></div>Structured JSON output</div>
+        <div class="out-label"><div class="out-dot"></div>Signal Loom Schema — JSON output (truncated)</div>
         <div class="output-box">{
-  <span class="k">"title"</span>: <span class="s">"93e2e7cb...test2"</span>,
-  <span class="k">"source_kind"</span>: <span class="s">"local_av"</span>,
+  <span class="k">"schema"</span>: <span class="s">"Signal Loom Schema v1"</span>,
+  <span class="k">"schema_url"</span>: <span class="s">"https://signalloomai.com/schema"</span>,
+  <span class="k">"source_ref"</span>: <span class="s">"youtube.com/watch?v=..."</span>,
+  <span class="k">"source_kind"</span>: <span class="s">"youtube_url"</span>,
   <span class="k">"media_kind"</span>: <span class="s">"audio"</span>,
   <span class="k">"language"</span>: <span class="s">"en"</span>,
-  <span class="k">"model"</span>: <span class="s">"mlx-community/whisper-large-v3-turbo"</span>,
   <span class="k">"duration_seconds"</span>: <span class="n">20.0</span>,
   <span class="k">"segments"</span>: [
     {
       <span class="k">"segment_id"</span>: <span class="s">"S1"</span>,
-      <span class="k">"start_seconds"</span>: <span class="n">0.48</span>,
-      <span class="k">"end_seconds"</span>: <span class="n">5.64</span>,
+      <span class="k">"start_seconds"</span>: <span class="n">0.48</span>, <span class="k">"end_seconds"</span>: <span class="n">5.64</span>,
       <span class="k">"start_time"</span>: <span class="s">"00:00:00"</span>,
       <span class="k">"end_time"</span>: <span class="s">"00:00:06"</span>,
-      <span class="k">"text"</span>: <span class="s">"Hello, this is Travis Brady with AIM-T Pulse and AIM Elemental Health Solutions."</span>
-    },
-    {
-      <span class="k">"segment_id"</span>: <span class="s">"S2"</span>,
-      <span class="k">"start_seconds"</span>: <span class="n">6.46</span>,
-      <span class="k">"end_seconds"</span>: <span class="n">11.16</span>,
-      <span class="k">"text"</span>: <span class="s">"More extemporaneous narrative through the slides today."</span>
+      <span class="k">"text"</span>: <span class="s">"Hello, this is Travis Brady with AIM-T Pulse..."</span>
     }
-  ]
+  ],
+  <span class="k">"metadata"</span>: {
+    <span class="k">"schema_dimensions"</span>: [
+      { <span class="k">"dimension"</span>: <span class="s">"temporal"</span>, <span class="k">"description"</span>: <span class="s">"timestamped segments with start/end seconds"</span> },
+      { <span class="k">"dimension"</span>: <span class="s">"provenance"</span>, <span class="k">"description"</span>: <span class="s">"source reference + platform metadata"</span> }
+    ]
+  }
 }</div>
       </div>
     </div>
@@ -290,8 +288,8 @@ Segments: 4 · Chars: 186 · Time: 4.28s</span>
   <div class="bottom-line">
     <div class="bottom-title">This is the difference that matters.</div>
     <div class="bottom-desc">
-      A transcript is for humans. <strong>Structured, timestamped JSON is for machines.</strong><br><br>
-      Every word has a timestamp. Every segment has a time boundary. Every output carries the metadata that makes it useful to AI systems — not just readable by people. That's Signal Loom.
+      A transcript is for humans. <strong>Structured, timestamped, provenance-rich JSON is for AI systems.</strong><br><br>
+      Every segment has a time boundary. Every output carries its source. That makes audio citable in a RAG pipeline, retrievable by timestamp, and groundable in a knowledge graph. Signal Loom doesn't just transcribe — it <strong>structurally understands</strong> what was said and where it came from.
     </div>
   </div>
 
