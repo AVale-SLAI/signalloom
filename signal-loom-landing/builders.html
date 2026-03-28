@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Builders — Signal Loom AI</title>
+  <meta name="description" content="Structured intelligence for AI product teams. Turn media into agent-ready JSON with timestamps, speakers, topics, and provenance — without weeks of post-processing.">
+  <style>
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a25;
+      --border: #222230; --accent: #5B8DF9; --accent-bright: #7BA8FF;
+      --green: #22C55E; --text: #E2E8F0; --text-dim: #94A3B8;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 32px; border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .nav-brand span { color: var(--accent); }
+    nav ul { display: flex; align-items: center; gap: 28px; list-style: none; }
+    nav ul a { color: var(--text-dim); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    nav ul a:hover { color: var(--text); }
+    nav ul a.active { color: var(--accent-bright); }
+    .btn-nav { padding: 7px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-dim); }
+    .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      text-align: center; padding: 100px 20px 60px; max-width: 780px; margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(91,141,249,0.08); border: 1px solid rgba(91,141,249,0.2);
+      border-radius: 100px; padding: 6px 14px; font-size: 12px; color: var(--accent-bright);
+      margin-bottom: 24px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .hero-title { font-size: 48px; font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
+    .hero-title span { color: var(--accent-bright); }
+    .hero-sub { font-size: 18px; line-height: 1.7; color: var(--text-dim); max-width: 620px; margin: 0 auto 32px; }
+    .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border: none; }
+    .btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); }
+    .btn-secondary { background: transparent; border: 1.5px solid var(--border); color: var(--text-dim); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* CONTAINER */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    /* SECTION */
+    section { padding: 80px 20px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-title { font-size: 36px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .section-sub { font-size: 17px; line-height: 1.7; color: var(--text-dim); max-width: 640px; }
+
+    /* PROBLEM / PAIN */
+    .pain-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .pain-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+    }
+    .pain-card h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .pain-card p { font-size: 14px; line-height: 1.65; color: var(--text-dim); }
+    .pain-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px;
+      border-radius: 4px; margin-bottom: 10px;
+    }
+    .pain-tag.red { background: rgba(239,68,68,0.1); color: #FCA5A5; }
+    .pain-tag.yellow { background: rgba(245,158,11,0.1); color: #FCD34D; }
+    .pain-tag.blue { background: rgba(91,141,249,0.1); color: var(--accent-bright); }
+
+    /* CODE BLOCK */
+    .code-block {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+      font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
+      color: var(--text-dim); overflow-x: auto; margin: 24px 0;
+    }
+    .code-block .k { color: #7DD3FC; }
+    .code-block .s { color: #86EFAC; }
+    .code-block .n { color: #FCD34D; }
+    .code-block .cm { color: #6B7280; }
+    .code-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; font-family: var(--font-mono); }
+    .code-label span { color: var(--accent); }
+
+    /* COMPARISON */
+    .compare-section { padding: 80px 20px; }
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 48px; }
+    .compare-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+    }
+    .compare-card.before { border-color: rgba(239,68,68,0.3); }
+    .compare-card.after { border-color: rgba(34,197,94,0.3); }
+    .compare-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+    .compare-card.before h3 { color: #FCA5A5; }
+    .compare-card.after h3 { color: var(--green); }
+    .compare-card ul { list-style: none; padding: 0; }
+    .compare-card ul li { font-size: 14px; color: var(--text-dim); padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .compare-card ul li:last-child { border-bottom: none; }
+    .compare-card ul li::before { content: "— "; opacity: 0.5; }
+
+    /* FUNNEL */
+    .funnel-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .funnel-steps { display: flex; gap: 0; margin-top: 48px; }
+    .funnel-step {
+      flex: 1; padding: 24px 20px; text-align: center;
+      border-right: 1px solid var(--border); position: relative;
+    }
+    .funnel-step:last-child { border-right: none; }
+    .funnel-num { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 8px; letter-spacing: 1px; }
+    .funnel-step h4 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .funnel-step p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .funnel-arrow { position: absolute; right: -12px; top: 50%; transform: translateY(-50%); color: var(--border); font-size: 18px; z-index: 1; }
+
+    /* SDK / CODE */
+    .sdk-section { padding: 80px 20px; }
+    .sdk-tabs { display: flex; gap: 0; margin-bottom: 0; }
+    .sdk-tab {
+      padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0;
+      color: var(--text-dim); background: var(--bg); margin-right: 4px;
+      transition: all 0.2s;
+    }
+    .sdk-tab.active { background: var(--surface); color: var(--text); border-color: var(--surface); }
+    .sdk-tab:hover:not(.active) { color: var(--text); }
+    .sdk-code {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 0 12px 12px 12px; padding: 24px;
+      font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
+      color: var(--text-dim); overflow-x: auto;
+    }
+
+    /* PRICING FOR BUILDERS */
+    .pricing-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 48px; }
+    .pricing-tier {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px 20px;
+    }
+    .pricing-tier.popular { border-color: var(--accent); position: relative; }
+    .pricing-tier.popular::before {
+      content: "Most Popular"; position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: #fff; font-size: 10px; font-weight: 700;
+      padding: 3px 10px; border-radius: 100px; letter-spacing: 0.5px;
+    }
+    .pricing-name { font-size: 13px; font-weight: 700; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .pricing-price { font-size: 32px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .pricing-period { font-size: 12px; color: var(--text-dim); }
+    .pricing-divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .pricing-features { list-style: none; padding: 0; }
+    .pricing-features li { font-size: 13px; color: var(--text-dim); padding: 5px 0; }
+    .pricing-features li::before { content: "✓ "; color: var(--green); font-weight: 700; }
+
+    /* CTA */
+    .cta-section { text-align: center; padding: 100px 20px; }
+    .cta-section .section-title { font-size: 42px; }
+    .cta-section .section-sub { margin: 0 auto 40px; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 20px; text-align: center; font-size: 13px; color: var(--text-dim); }
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 34px; }
+      .pain-grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .funnel-steps { flex-direction: column; }
+      .funnel-step { border-right: none; border-bottom: 1px solid var(--border); }
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">Signal Loom <span>AI</span></a>
+  <ul>
+    <li><a href="/builders.html" class="active">For Builders</a></li>
+    <li><a href="/ingest.html">YouTube Ingest</a></li>
+    <li><a href="/demo.html">Demo</a></li>
+    <li><a href="/#pricing">Pricing</a></li>
+    <li><a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Built for AI product teams
+  </div>
+  <h1 class="hero-title">
+    Turn media into structured intelligence —<br>
+    <span>and prove it on your own content in minutes.</span>
+  </h1>
+  <p class="hero-sub">
+    The API that gives AI product teams a schema-defined knowledge object instead of raw transcript text. Timestamps, speakers, topics, entities, provenance — ready for agents, RAG pipelines, and retrieval systems without weeks of custom post-processing.
+  </p>
+  <div class="hero-ctas">
+    <a href="/demo.html" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      See live demo
+    </a>
+    <a href="/ingest.html" class="btn btn-secondary">
+      Try a YouTube URL free
+    </a>
+  </div>
+</section>
+
+<!-- PROBLEM: WHAT BUILDERS ACTUALLY FACE -->
+<section class="pain-section">
+  <div class="container">
+    <div class="section-label">The builder's problem</div>
+    <h2 class="section-title">You need more than a transcript.<br>You need a usable data object.</h2>
+    <p class="section-sub">Raw text from speech-to-text is table stakes. The real work starts after the transcript. Here's what that looks like in practice — and why it slows down every AI product team that reaches for it.</p>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <span class="pain-tag red">Symptom cluster 1</span>
+        <h3>The RAG retrieval problem</h3>
+        <p>Transcript chunks don't give you temporal context. A retrieval result says "the meeting mentioned pricing" but not at which point, by whom, or in what context. Your AI answers feel ungrounded because they are.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag red">Symptom cluster 2</span>
+        <h3>The agent grounding problem</h3>
+        <p>Your agent has no structured way to cite audio/video sources. It can say "the recording mentioned X" but can't point to the exact moment. Agents built on raw transcripts hallucinate context they never had.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag yellow">Symptom cluster 3</span>
+        <h3>The post-processing tax</h3>
+        <p>Every team we talk to has built their own Whisper pipeline: ffmpeg normalization, timestamp alignment, speaker diarization, entity extraction. That's weeks of work before you ship one useful feature.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag yellow">Symptom cluster 4</span>
+        <h3>The schema instability problem</h3>
+        <p>OpenAI changes their Whisper output format. Your parsing logic breaks. Your downstream systems break. You're now maintaining someone else's model output contract — and it's not your core competency.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag blue">Symptom cluster 5</span>
+        <h3>The real-time latency problem</h3>
+        <p>Streaming audio needs streaming intelligence — partial transcripts as they happen, timestamps updating in real time, session state across chunks. Batch transcription doesn't solve real-time product features.</p>
+      </div>
+
+      <div class="pain-card">
+        <span class="pain-tag blue">Symptom cluster 6</span>
+        <h3>The multi-source problem</h3>
+        <p>YouTube URLs, uploaded recordings, live streams, conference calls — all require different ingestion paths. Most teams end up with a fragmented pipeline that doesn't scale beyond their first use case.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section class="compare-section">
+  <div class="container">
+    <div class="section-label">What changes</div>
+    <h2 class="section-title">From raw transcript to structured knowledge object.</h2>
+    <p class="section-sub">Same source audio. Fundamentally different output for your AI systems.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card before">
+        <h3>Without Signal Loom — what you get</h3>
+        <ul>
+          <li>Plain text — no timestamps, no speakers</li>
+          <li>Hours of custom post-processing to add structure</li>
+          <li>No provenance — you lose track of where data came from</li>
+          <li>Schema changes every time the model updates</li>
+          <li>No entity extraction, no topic tags</li>
+          <li>No streaming — everything batch</li>
+          <li>You maintain the pipeline; it's your problem</li>
+        </ul>
+      </div>
+
+      <div class="compare-card after">
+        <h3>With Signal Loom — what you get</h3>
+        <ul>
+          <li>Timestamped, speaker-labeled segments from call one</li>
+          <li>Provenance metadata on every knowledge object</li>
+          <li>Stable schema — built for AI systems, not humans</li>
+          <li>Entity and topic enrichment in the same pass</li>
+          <li>Real-time WebSocket streaming for live features</li>
+          <li>Multi-source ingestion: URLs, uploads, streams</li>
+          <li>Schema contract you can build against without maintenance</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE EXAMPLE -->
+<section class="sdk-section">
+  <div class="container">
+    <div class="section-label">The API</div>
+    <h2 class="section-title">One call. One schema. No post-processing.</h2>
+    <p class="section-sub">From raw audio to a structured knowledge object in seconds.</p>
+
+    <div class="code-label">Python SDK — <span>pip install signalloom-ai</span></div>
+    <div class="code-block">
+from signalloom import Client
+
+client = Client()  # reads SL_API_KEY from env
+
+# YouTube URL → structured intelligence
+result = client.transcribe_sync(
+    url="https://youtube.com/watch?v=...",
+    return_format="json"
+)
+
+# What you get:
+print(result.schema)           # "Signal Loom Schema v1"
+print(result.duration_seconds) # 213.04
+print(result.segments[0].text)           # "We're no strangers to love..."
+print(result.segments[0].start_seconds) # 0.0
+print(result.segments[0].end_seconds)   # 21.88
+print(result.segments[0].segment_id)    # "S1"
+print(result.source_kind)     # "youtube_url"
+print(result.metadata)         # {"schema_dimensions": [...]}
+
+# Real-time streaming:
+async for partial in client.stream(audio_chunk_bytes):
+    print(partial.text)   # incremental transcript
+    print(partial.done)   # is this segment final?
+    </div>
+
+    <div class="code-label">What AI systems actually receive — <span>Signal Loom Schema v1</span></div>
+    <div class="code-block">
+{
+  <span class="k">"schema"</span>: <span class="s">"Signal Loom Schema v1"</span>,
+  <span class="k">"source_ref"</span>: <span class="s">"youtube.com/watch?v=dQw4w9WgXcQ"</span>,
+  <span class="k">"source_kind"</span>: <span class="s">"youtube_url"</span>,
+  <span class="k">"duration_seconds"</span>: <span class="n">213.04</span>,
+  <span class="k">"language"</span>: <span class="s">"en"</span>,
+  <span class="k">"segments"</span>: [
+    {
+      <span class="k">"segment_id"</span>: <span class="s">"S1"</span>,
+      <span class="k">"start_seconds"</span>: <span class="n">0.0</span>,
+      <span class="k">"end_seconds"</span>: <span class="n">21.88</span>,
+      <span class="k">"text"</span>: <span class="s">"We're no strangers to love..."</span>
+    }
+  ],
+  <span class="k">"metadata"</span>: {
+    <span class="k">"schema_dimensions"</span>: [
+      { <span class="k">"dimension"</span>: <span class="s">"temporal"</span> },
+      { <span class="k">"dimension"</span>: <span class="s">"provenance"</span> }
+    ]
+  }
+}
+    </div>
+  </div>
+</section>
+
+<!-- BUILDER FUNNEL -->
+<section class="funnel-section">
+  <div class="container">
+    <div class="section-label">The builder journey</div>
+    <h2 class="section-title">From API key to production in one afternoon.</h2>
+    <p class="section-sub">No sales call. No onboarding call. No waiting.</p>
+
+    <div class="funnel-steps">
+      <div class="funnel-step">
+        <div class="funnel-num">STEP 1</div>
+        <h4>Get an API key</h4>
+        <p>100 minutes free, no credit card. 30 seconds to an API key.</p>
+        <span class="funnel-arrow">→</span>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-num">STEP 2</div>
+        <h4>Run your first file</h4>
+        <p>SDK installed in minutes. Paste a URL or upload a file. Get structured output.</p>
+        <span class="funnel-arrow">→</span>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-num">STEP 3</div>
+        <h4>Enable streaming</h4>
+        <p>Real-time WebSocket endpoint for live microphone or stream processing.</p>
+        <span class="funnel-arrow">→</span>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-num">STEP 4</div>
+        <h4>Scale to production</h4>
+        <p>Webhooks, higher limits, usage tracking. No architecture changes needed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING FOR BUILDERS -->
+<section class="pricing-section">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Start free. Scale when it matters.</h2>
+    <p class="section-sub">You're buying engineering time back, not raw transcription minutes. Pricing reflects structured intelligence — not the cost of running Whisper.</p>
+
+    <div class="pricing-grid">
+      <div class="pricing-tier">
+        <div class="pricing-name">Free</div>
+        <div class="pricing-price">$0</div>
+        <div class="pricing-period">forever</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>100 structured min/mo</li>
+          <li>Full API access</li>
+          <li>All output formats</li>
+          <li>WebSocket streaming</li>
+          <li>YouTube + URL ingest</li>
+          <li>Community support</li>
+        </ul>
+        <a href="/signup.html" class="btn btn-secondary" style="margin-top: 16px; display: block; text-align: center; text-decoration: none;">Start free →</a>
+      </div>
+
+      <div class="pricing-tier">
+        <div class="pricing-name">Starter</div>
+        <div class="pricing-price">$25</div>
+        <div class="pricing-period">per month</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>1,000 structured min/mo</li>
+          <li>Everything in Free</li>
+          <li>Priority processing</li>
+          <li>Webhook delivery</li>
+          <li>Usage dashboard</li>
+        </ul>
+        <a href="/checkout.html?plan=starter" class="btn btn-secondary" style="margin-top: 16px; display: block; text-align: center; text-decoration: none;">Get Starter →</a>
+      </div>
+
+      <div class="pricing-tier popular">
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-price">$99</div>
+        <div class="pricing-period">per month</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>5,000 structured min/mo</li>
+          <li>Everything in Starter</li>
+          <li>5 concurrent jobs</li>
+          <li>Email support</li>
+          <li>Usage analytics</li>
+        </ul>
+        <a href="/checkout.html?plan=pro" class="btn btn-primary" style="margin-top: 16px; display: block; text-align: center; text-decoration: none;">Get Pro →</a>
+      </div>
+
+      <div class="pricing-tier">
+        <div class="pricing-name">Scale</div>
+        <div class="pricing-price">$349</div>
+        <div class="pricing-period">per month</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>25,000 structured min/mo</li>
+          <li>Everything in Pro</li>
+          <li>15 concurrent jobs</li>
+          <li>Dedicated support</li>
+          <li>Custom integrations</li>
+        </ul>
+        <a href="/checkout.html?plan=scale" class="btn btn-secondary" style="margin-top: 16px; display: block; text-align: center; text-decoration: none;">Get Scale →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OBJECTIONS -->
+<section style="padding: 80px 20px; border-top: 1px solid var(--border);">
+  <div class="container">
+    <div class="section-label">Objection handling</div>
+    <h2 class="section-title">Questions builders actually ask.</h2>
+
+    <div style="margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+      <div>
+        <h4 style="font-size: 15px; color: var(--text); margin-bottom: 8px;">"We already run Whisper ourselves."</h4>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.7;">You do. And your team spends time maintaining the pipeline, not building features. Signal Loom is the schema contract and the processing layer — what you'd build next anyway. The pitch isn't Whisper. The pitch is what you'd do with Whisper if you didn't have to maintain it.</p>
+      </div>
+      <div>
+        <h4 style="font-size: 15px; color: var(--text); margin-bottom: 8px;">"We can add timestamps ourselves."</h4>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.7;">Maybe. But you also need provenance tracking, speaker labeling, entity extraction, schema stability, streaming, and multi-source ingestion. Each one is a project. Signal Loom gives you all of them in one call.</p>
+      </div>
+      <div>
+        <h4 style="font-size: 15px; color: var(--text); margin-bottom: 8px;">"This seems like an extra dependency."</h4>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.7;">The dependency you have is Whisper plus every post-processing step you're maintaining. Signal Loom replaces that stack. The API contract is smaller than the pipeline you're already maintaining.</p>
+      </div>
+      <div>
+        <h4 style="font-size: 15px; color: var(--text); margin-bottom: 8px;">"How is this different from AssemblyAI or Deepgram?"</h4>
+        <p style="font-size: 14px; color: var(--text-dim); line-height: 1.7;">They're speech-to-text engines. Signal Loom is a structured intelligence layer. We use best-in-class STT underneath. The product is the schema — timestamps, speakers, topics, entities, provenance — not just the transcript.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" style="border-top: 1px solid var(--border);">
+  <h2 class="section-title">Stop building transcript pipelines.<br>Start shipping AI features.</h2>
+  <p class="section-sub">100 minutes free. API key in 30 seconds. No credit card required.</p>
+  <div class="hero-ctas">
+    <a href="/signup.html" class="btn btn-primary" style="font-size: 16px; padding: 14px 28px;">
+      Get your free API key →
+    </a>
+    <a href="/demo.html" class="btn btn-secondary" style="font-size: 16px; padding: 14px 28px;">
+      See the demo first
+    </a>
+  </div>
+</section>
+
+<footer>
+  <a href="/">Signal Loom AI</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="https://github.com/signalloom/signalloom" target="_blank">GitHub</a>
+  <p style="margin-top: 12px;">Structured intelligence for AI systems — not just a transcript.</p>
+</footer>
+
+<script>
+  // Highlight active nav
+  const path = window.location.pathname;
+  document.querySelectorAll('nav a').forEach(a => {
+    if (path.endsWith('/builders.html') && a.text.includes('Builders')) {
+      a.classList.add('active');
+    }
+  });
+</script>
+
+</body>
+</html>
